@@ -1,0 +1,431 @@
+#sidebar {
+    width: 300px;
+    background: #181818;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    border-radius: 40px 0px 0px 40px;
+    gap: 50px;
+    min-height: 100vh;
+}
+
+.sidebar__logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 0px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar__logo__img {
+    width: 100px;
+    margin: auto;
+}
+
+.sidebar__logo__link {
+    width: 100px;
+    float: left;
+    margin: auto;
+}
+
+.sidebar__menu {
+    list-style: none;
+}
+
+.sidebar__promo {
+    margin-top: auto;
+    padding: 15px;
+    background: #ff3366;
+    text-align: center;
+    border-radius: 10px;
+    color: white;
+}
+
+.sidebar__logout {
+    color: #FFF;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    cursor: pointer;
+    background: #0a0a0a;
+    padding: 8px 10px;
+    border-radius: 15px;
+    width: 80%;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.sidebar__btn__logout {
+    color: #FFF;
+    background: unset;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+.sidebar__btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: white;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.logo-site {
+    width: 60px;
+}
+
+/* Sidebar -item */
+
+.theme-toggle-icon {
+    width: 24px;
+    height: 24px;
+    color: #FFF;
+}
+
+.sidebar-menu {
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 100%;
+    overflow: auto;
+}
+
+.sidebar-menu-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
+
+.sidebar-title {
+    width: 100%;
+    text-align: left;
+    padding: 0px 0px 10px 10px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 26px;
+    color: #FFF;
+}
+
+.sidebar-item {
+    padding: 10px;
+    color: white;
+}
+
+.sidebar-text-gnr {
+    width: calc(100% - 50px);
+    color: #adb5bd;
+}
+
+.submenu-link {
+    color: #adb5bd;
+    width: 100%;
+    float: left;
+}
+
+.submenu-item {
+    padding: 10px 0px 0px 0px;
+    width: 100%;
+}
+
+.sidebar-item.active .sidebar-text-gnr {
+    color: #FFF;
+}
+
+.sidebar-item.active .submenu-child {
+    display: flex;
+}
+
+.active_link {
+    color: #FFF;
+    font-weight: 500;
+}
+
+.sidebar-item.active {
+    background: #222;
+    border-radius: 10px;
+}
+
+.sidebar-item:hover .sidebar-text-gnr {
+    transition: all 0.8s ease;
+    color: #FFF;
+}
+
+.submenu-child .submenu-item:hover .submenu-link {
+    transition: all 0.8s ease;
+    color: #FFF;
+}
+
+.box-icon-showhide {
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    border: 1px dashed #FFF;
+}
+
+.line2-showhide {
+    transform: rotate(90deg);
+}
+
+.icon-line-showhide {
+    width: 9px;
+    height: 2px;
+    background: #FFF;
+    border-radius: 5px;
+    position: absolute;
+    transition: all 0.8s ease;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.submenu-child {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 10px;
+}
+
+.orther-title {
+    margin-top: 20px;
+}
+
+/* CSS nút checkbox */
+
+.box_input_toggle-dark {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.box_input_toggle-dark .m_label_toggle-dark {
+    position: relative;
+    display: inline-block;
+    width: 28px;
+    height: 17px;
+    margin-right: unset;
+}
+
+.box_input_toggle-dark .m_label_toggle-dark .m_input_toggle-dark {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.box_input_toggle-dark .m_span_toggle-dark {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #878686;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.box_input_toggle-dark .m_span_toggle-dark:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 3px;
+    bottom: 2px;
+    background-color: #fff;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.box_input_toggle-dark .m_input_toggle-dark:checked+.m_span_toggle-dark {
+    background-color: #451da0;
+}
+
+.box_input_toggle-dark .m_input_toggle-dark:checked+.m_span_toggle-dark:before {
+    transform: translateX(10px)
+}
+
+/* end CSS nút checkbox */
+
+
+.container-header {
+    width: 100%;
+    padding-top: 30px;
+}
+
+.header-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.account-header {
+    width: 100%;
+}
+
+.hd-account {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.hd-btn-login {
+    color: #FFF;
+}
+
+/* SHOW INFOR ACCOUNT */
+.ShowInforAccount-container {
+    position: absolute;
+    top: 100px;
+    right: 60px;
+    width: 300px;
+    min-height: 200px;
+    padding: 0px;
+    background: #FFF;
+    z-index: 2;
+    box-shadow: 0px 0px 9px #ccc;
+    animation: slide-up 1s ease;
+    display: none;
+    border-radius: 10px;
+}
+
+.close-ShowInforAccount {
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+    background: unset;
+}
+
+.ShowInforAccount-container::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    display: block;
+    border-width: 0 8px 10px 8px;
+    border-color: transparent transparent #FFF transparent;
+    right: 15px;
+    top: -10px;
+}
+
+.ShowInforAccount-container .ShowInforAccount {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 0px;
+    border-radius: 10px;
+}
+
+.ShowInforAccount-container .ShowInforAccount-top {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding: 0px 10px;
+}
+
+.ShowInforAccount-container .ShowInforAccount-top-title {
+    text-align: center;
+    width: calc(100% - 20px);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 20px;
+    text-transform: uppercase;
+}
+
+.ShowInforAccount-container .account-content-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px dashed #ccc;
+    border-bottom: 1px dashed #ccc;
+}
+
+.ShowInforAccount-container .box-account-avatar {
+    width: 70px;
+    height: 70px;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 50%;
+}
+
+.ShowInforAccount-container .account-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 50%;
+}
+
+.ShowInforAccount-container .ShowInforAccount-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ShowInforAccount-container .box-account-name {
+    width: calc(100% - 80px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ShowInforAccount-container .account-content-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px dashed #ccc;
+    cursor: pointer;
+}
+
+.ShowInforAccount-container .account-content-icon {
+    width: 24px;
+    height: 24px;
+    color: #000;
+}
+
+.ShowInforAccount-container .account-content-tex {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #000;
+}
+
+.ShowInforAccount-container .account-content-item:hover {
+    background: #1c2d5b;
+}
+
+.ShowInforAccount-container .account-content-item:hover .account-content-icon {
+    color: #fff;
+}
+
+.ShowInforAccount-container .account-content-item:hover .account-content-tex {
+    color: #fff;
+}
+
+/* end  */

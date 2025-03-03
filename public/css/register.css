@@ -1,0 +1,164 @@
+#register {
+    min-height: 400px;
+    width: 100%;
+    float: left;
+}
+
+.register-container {
+    width: 100%;
+    padding: 0px 10px;
+}
+
+.register-frame {
+    max-width: 900px;
+    width: 100%;
+    background: #bdbdbda3;
+    margin: 20px auto;
+    box-shadow: 0px 0px 5px #333;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.register-form {
+    float: right;
+    width: 62%;
+    height: 100%;
+    background: #FFF;
+    border-radius: 10px;
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.register-introduce {
+    width: 38%;
+    height: 100%;
+    padding: 10px;
+    float: left;
+}
+
+.register-form-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-top-title {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 30px;
+    width: 100%;
+    text-align: center;
+}
+
+.form-top-text {
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 500;
+}
+
+.register-form-center {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.regis-box-item {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.regis_inp {
+    width: 100%;
+    outline: none;
+    background: none;
+    font-weight: 500;
+    line-height: 20px;
+    font-size: 13px;
+    font-family: 'Roboto';
+    color: #1c2d5b;
+}
+
+.regis-box-title {
+    transform: translateY(15px);
+}
+
+.regis-box-title-birth {
+    transform: translateY(0px) !important;
+    font-size: 16px !important;
+}
+
+.regis-box {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.regis-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.button_register {
+    width: 80%;
+    background: #000;
+    border: 1px solid #000;
+    padding: 10px;
+    border-radius: 20px;
+    color: #FFF;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.button_register:hover {
+    transition: all 0.6s ease;
+    border: 1px solid #000;
+    color: #000;
+    background: #FFF;
+}
+
+.register-icon-pass {
+    position: absolute;
+    right: 0;
+    top: 20px;
+    width: 24px;
+    height: 24px;
+}
+
+.regis-support {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+@media screen and (max-width: 1023px) {
+  
+}
+
+@media screen and (max-width:600px) {
+    .register-form {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width:500px) {
+    .register-frame {
+        flex-direction: column;
+    }
+
+    .register-form {
+        padding: 20px 15px;
+        width: 100%;
+    }
+}

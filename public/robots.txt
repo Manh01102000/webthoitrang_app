@@ -1,0 +1,46 @@
+# Cho phép tất cả các bot thu thập dữ liệu
+User-agent: *
+Disallow:
+
+#Giúp giảm tải server nếu có nhiều bot thu thập dữ liệu cùng lúc.
+Crawl-delay: 5
+
+# Chặn trang nhạy cảm không cần index (admin, giỏ hàng, login...)
+Disallow: /admin/
+Disallow: /dang-nhap-tai-khoan/
+Disallow: /dang-ky-tai-khoan/
+Disallow: /gio-hang/
+Disallow: /dang-xuat/
+# Tránh index trang tìm kiếm
+Disallow: /tim-kiem/
+# Tránh index trang tag (nếu không dùng)
+Disallow: /tags/
+# Nếu bạn dùng WordPress, tránh bị lộ API dữ liệu 
+Disallow: /wp-json/
+
+# Chặn các URL chứa tham số không quan trọng để tránh duplicate content
+Disallow: /*?sessionid=
+Disallow: /*?utm_source=
+Disallow: /*?ref=
+Disallow: /*?sort=
+Disallow: /*?filter=
+
+# Chặn truy cập vào file nhạy cảm (bảo mật)
+Disallow: /config.php
+Disallow: /database/
+Disallow: /functions/
+Disallow: /core/
+# Nếu bạn dùng PHP Composer
+Disallow: /vendor/
+Disallow: /private/
+
+# Cho phép tất cả bot truy cập thư mục quan trọng
+User-agent: Googlebot
+Allow: /upload/
+Allow: /images/
+Allow: /pictures/
+Allow: /css/
+Allow: /js/
+
+# Chỉ mục sitemap giúp bot thu thập dữ liệu nhanh hơn
+# Sitemap: https://yourwebsite.com/sitemap.xml

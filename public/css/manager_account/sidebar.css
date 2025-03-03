@@ -1,0 +1,130 @@
+.sidebar-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.sidebar-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.sidebar-header .box-account-avatar {
+    width: 70px;
+    height: 70px;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 50%;
+}
+
+.sidebar-header .box-account-name {
+    width: calc(100% - 80px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sidebar-header .account-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: 0px 0px 5px #ccc;
+    border-radius: 50%;
+}
+
+.frame-manageraccount-all {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+}
+
+.sidebar-container {
+    max-width: 300px;
+    width: 100%;
+    float: left;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    min-height: 200px;
+    padding-bottom: 20px;
+}
+
+.main-container {
+    width: calc(100% - 315px);
+    float: left;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    min-height: 200px;
+}
+
+.sidebar-center .account-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.sidebar-center .account-sidebar-icon {
+    width: 24px;
+    height: 24px;
+    color: #000;
+}
+
+.sidebar-center .account-sidebar-tex {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #000;
+}
+
+.active-sidebar {
+    background: #1c2d5b;
+}
+
+.active-sidebar .account-sidebar-icon {
+    color: #fff;
+}
+
+.active-sidebar .account-sidebar-tex {
+    color: #fff;
+}
+
+.sidebar-center .account-sidebar-item:hover {
+    background: #1c2d5b;
+}
+
+.sidebar-center .account-sidebar-item:hover .account-sidebar-icon {
+    color: #fff;
+}
+
+.sidebar-center .account-sidebar-item:hover .account-sidebar-tex {
+    color: #fff;
+}
+
+@media screen and (max-width:767px) {
+    .frame-manageraccount-all {
+        flex-direction: column;
+    }
+
+    .sidebar-container {
+        max-width: 100%;
+    }
+
+    .main-container {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width:500px) {
+    .profile_top-text {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 30px;
+    }
+}

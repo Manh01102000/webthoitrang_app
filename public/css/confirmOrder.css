@@ -1,0 +1,662 @@
+.container-page {
+    width: 100%;
+    display: flex;
+    min-height: 400px;
+    justify-content: center;
+    align-items: start;
+    background: #FFF;
+    border-top: 1px solid #ccc;
+}
+
+.container-confirmOrder {
+    width: 100%;
+    max-width: 1300px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.frame-confirmOrder-all {
+    width: 100%;
+    max-width: 100%;
+    margin: auto;
+    float: left;
+}
+
+.confirmOrder-all-left {
+    width: calc(100% - 510px);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    float: left;
+}
+
+.frame-confirmOrder-all .confirmOrder {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0px 0px 5px #ccc;
+    border: 1px dashed #ccc;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.frame-confirmOrder-all .time_work {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+}
+
+.frame-confirmOrder-all .time_work .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+
+.frame-confirmOrder-all .form-confirmOrder {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px dashed #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px #ccc;
+}
+
+.confirmOrder-all-right {
+    width: 500px;
+    height: 500px;
+    float: left;
+    margin-left: 10px;
+    position: sticky;
+    top: 0px;
+}
+
+.img-confirmOrder {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.confirm-shipaddress {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background: #FFFFFF;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.confirm-shipaddress:checked {
+    border-color: #1c2d5b;
+    background-color: #1c2d5b;
+}
+
+.confirm-shipaddress:checked::before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    margin-left: 5px;
+    margin-top: 0px;
+}
+
+.container-edit-inforship {
+    position: absolute;
+    top: -10px;
+    right: 0px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-edit-inforship {
+    background: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+}
+
+/* modal thông tin nhận hàng*/
+
+.show_infor_ship .time_work {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.show_infor_ship .time_work .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+
+.show_infor_ship {
+    padding: 20px 10px;
+    height: 200px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.item-infor-ship {
+    background: #cccccc42;
+    padding: 20px 10px;
+    border-radius: 10px;
+}
+
+.container-add-inforship {
+    width: 100%;
+    padding: 10px 10px 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-add-inforship button {
+    background: unset;
+    width: 50%;
+    margin: auto;
+    color: #1c2d5b;
+    border: 1px solid #1c2d5b;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.container-add-inforship button:hover {
+    transition: all 0.8s ease;
+    color: #FFF;
+    background: #1c2d5b;
+}
+
+/* end modal thông tin nhận hàng*/
+
+/* modal thêm thông tin nhận hàng*/
+
+.show_addinfor_ship {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+.addinforship-box {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.addinforship-box-title {
+    transform: translateY(15px);
+}
+
+.addinforship-box-item {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.addinforship_inp {
+    width: 100%;
+    outline: none;
+    background: none;
+    font-weight: 500;
+    line-height: 20px;
+    font-size: 13px;
+    font-family: 'Roboto';
+    color: #1c2d5b;
+}
+
+.city-dist-com .addinforship-box-item {
+    border: 0px;
+}
+
+.city-dist-com .container-select {
+    width: 100%;
+    position: relative;
+}
+
+.city-dist-com :is(.address_orders_city, .address_orders_district, .address_orders_commune) {
+    width: 100% !important;
+    height: 36px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.city-dist-com :is(.box-append-city, .box-append-distric, .box-append-commune) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.city-dist-com .addinforship-box-title {
+    transform: translateY(0px) !important;
+    font-size: 15px !important;
+}
+
+.modal .select2-container .select2-selection--single {
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    height: 36px;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 10px;
+}
+
+.modal .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 20px;
+}
+
+.modal .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #000;
+    line-height: 34px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.modal .select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 100% !important;
+}
+
+/* end modal thêm thông tin nhận hàng*/
+
+/* Thông tin đơn hàng */
+
+.container-detail-order {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #cccccc47;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.item-detail-order {
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    border: 1px solid #CCC;
+    border-radius: 10px;
+    background: #FFF;
+}
+
+.detail-order-price {
+    width: 100%;
+    padding: 0px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-detail-order-infor {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    align-items: start;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.detail-product-avatar {
+    width: 100px;
+    height: 100px;
+}
+
+img.product-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.detail-order-infor {
+    width: calc(100% - 110px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.order-infor-text {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.infor-total-price {
+    align-items: center;
+    justify-content: end;
+}
+
+textarea#ghi_chu {
+    width: 100%;
+    height: 150px;
+    background: unset;
+    resize: none;
+    outline: none;
+    padding: 10px;
+    font-family: 'Roboto';
+}
+
+/* end thông tin đơn hàng */
+
+/* Phương thức thanh toán */
+
+.payment_method_top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.payment_method_child {
+    gap: 10px;
+    align-items: start;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.payment_method_child input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #CCCCCC;
+    border-radius: 50%;
+}
+
+.show-payment-type {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: end;
+}
+
+.payment-type {
+    border: 1px solid #1c2d5b;
+    -webkit-appearance: none;
+}
+
+.payment-type:checked {
+    border-color: #1c2d5b !important;
+    background-color: #1c2d5b;
+}
+
+.payment-type:checked::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    margin-left: 6px;
+    margin-top: 1px;
+}
+
+.payment_method_content {
+    width: 100%;
+    margin: 20px 0px;
+    padding: 10px;
+    background: #cccccc47;
+    transition: all 0.8s ease;
+}
+
+.container-detail-payment_method {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* End phương thức thanh toán */
+
+/* So tien thanh toan */
+.paymentall-all-right {
+    width: 100%;
+    float: left;
+    margin-left: 0;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 0px;
+    transition: all 0.8s ease;
+}
+
+.paymentall_avatar {
+    margin: 30px 0px;
+    padding: 0px 10px;
+}
+
+.shipping_fee_unit,
+.total_payment_unit {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.paymentall_detail_content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.paymentall_infor_detail {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.container_button_payment {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btnpayment {
+    max-width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    border-radius: 10px;
+    background: #000;
+    color: #FFF;
+    border: 1px solid #000;
+}
+
+.btnpayment:hover {
+    transition: all 0.8s ease;
+    background: #FFF;
+    color: #000;
+    border: 1px solid #000;
+}
+
+.return_payment_link {
+    display: flex;
+    width: 50%;
+}
+
+.btn_return_payment {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #000;
+    background: unset;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #000;
+}
+
+.btn_return_payment:hover {
+    transition: all 0.8s ease;
+    background: #000;
+    color: #FFF;
+    border: 1px solid #000;
+}
+
+.method_content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.method_content_cod {
+    width: 100%;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 10px rgba(71, 71, 71, 0.08);
+    border-radius: 10px;
+    padding: 24px 20px;
+    display: none;
+}
+
+.method_content_bank {
+    width: 100%;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 10px rgba(71, 71, 71, 0.08);
+    border-radius: 10px;
+    min-height: 229px;
+    padding: 24px 20px;
+}
+
+.method_bank_infor_header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.method_bank_infor_hd_text {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.method_bank_infor_content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.purchasing_policy {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.purchasing_policy input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+}
+
+.purchasing_policy_input {
+    border: 1px solid #1c2d5b;
+    -webkit-appearance: none;
+}
+
+.purchasing_policy_input:checked {
+    transition: all 0.8s ease;
+    border-color: #1c2d5b !important;
+    background-color: #1c2d5b;
+}
+
+.purchasing_policy_input:checked::before {
+    transition: all 0.8s ease;
+    content: '';
+    display: block;
+    width: 4px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    margin-left: 6px;
+    margin-top: 1px;
+}
+
+
+/* end */
+
+
+@media screen and (max-width:1023px) {
+    .container-confirmOrder {
+        margin-bottom: 50px;
+        margin-top: 70px;
+    }
+
+    .confirmOrder-all-left {
+        width: calc(100% - 410px);
+    }
+
+    .confirmOrder-all-right {
+        width: 400px;
+        height: 400px;
+        top: 70px;
+    }
+}
+
+
+@media screen and (max-width:900px) {
+    .confirmOrder-all-right {
+        position: unset;
+    }
+
+    .confirmOrder-all-left {
+        width: 100%;
+    }
+
+    .confirmOrder-all-right {
+        width: 100%;
+        margin-top: 20px;
+        margin-left: 0px;
+    }
+}
