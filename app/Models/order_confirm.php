@@ -14,6 +14,7 @@ class order_confirm extends Model
     protected $primaryKey = 'order_confirm_id';
     protected $fillable = [
         'conf_code_order',
+        'conf_cart_id',
         'conf_user_id',
         'conf_product_code',
         'conf_product_amount',

@@ -4,8 +4,12 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+// Product
 use App\Repositories\product\ProductRepository;
 use App\Repositories\product\ProductRepositoryInterface;
+// User
+use App\Repositories\user\UserRepository;
+use App\Repositories\user\UserRepositoryInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -14,8 +18,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Đăng ký các dịch vụ của bạn
-        // Để Laravel tự động inject ProductRepository mỗi khi dùng ProductRepositoryInterface.
+        // Để Laravel tự động inject Repository mỗi khi dùng RepositoryInterface.
+        // Product
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        // User
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**

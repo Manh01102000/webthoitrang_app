@@ -23,6 +23,8 @@ class CreateOrdersTable extends Migration
             $table->string('order_user_email')->nullable();
             // địa điểm giao hàng
             $table->string('order_address_ship')->nullable();
+            // ghi chú
+            $table->text('order_user_note')->nullable();
             // Tổng số tiền sản phẩm
             $table->integer('order_total_price')->default('0');
             // Trạng thái duyệt đơn hàng (1: đơn chờ duyệt, 2: đơn đang hoạt động, 3: đơn hoàn thành, 4: đơn hết hạn, 5: đơn bị hủy)
@@ -43,6 +45,8 @@ class CreateOrdersTable extends Migration
             $table->integer('order_paymentMethod')->default('0');
             // Tên ngân hàng
             $table->string('order_name_bank')->nullable();
+            // Chi nhánh ngân hàng
+            $table->string('order_branch_bank')->nullable();
             // Tài khoản ngân hàng
             $table->string('order_account_bank')->nullable();
             // Chủ sở hữu

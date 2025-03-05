@@ -168,9 +168,15 @@
                                         </div>
                                         <div class="cart_item_general cart_item_priceall d_flex">
                                             <div class="ctn_product_activity cart_item_price">
-                                                <p class="product-total-price font_s15 line_h20 font_w400 cl_000" data-totalprice="{{ (int)$product_price_position * (int)($datacart['cart_product_amount'] ?? 1) }}">
-                                                    {{ number_format((int)$product_price_position * (int)($datacart['cart_product_amount'] ?? 1),0,',','.') }} đ
-                                                </p>
+                                                @if ($check_discount != 0)
+                                                    <p class="product-total-price font_s15 line_h20 font_w400 cl_000" data-totalprice="{{ (int)$product_discount * (int)($datacart['cart_product_amount'] ?? 1) }}">
+                                                        {{ number_format((int)$product_discount * (int)($datacart['cart_product_amount'] ?? 1),0,',','.') }} đ
+                                                    </p>
+                                                @else
+                                                    <p class="product-total-price font_s15 line_h20 font_w400 cl_000" data-totalprice="{{ (int)$product_price_position * (int)($datacart['cart_product_amount'] ?? 1) }}">
+                                                        {{ number_format((int)$product_price_position * (int)($datacart['cart_product_amount'] ?? 1),0,',','.') }} đ
+                                                    </p>
+                                                @endif
                                             </div>
                                             <div class="ctn_product_activity cart_item_activity cursor_pt">
                                                 <img src="{{ asset('images/icon/icon_delete.png') }}" width="18" height="19" onclick="DeleteProductCart(this)" class="delete-product-cart">

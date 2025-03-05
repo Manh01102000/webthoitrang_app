@@ -216,11 +216,11 @@
                                                     <div class="bkm_ngaybd_ngaykt_km d_flex gap_10">
                                                         <div class="box_bkm_ngaybd box_input_infor">
                                                             <label class="form-label font_s13 line_h16 font_w500 cl_000">Ngày bắt đầu <span style="color:red">*</span></label>
-                                                            <input type="date" name="discount_start_time" value="{{ date('Yy-m-d', $dataAll['dataProduct']['discount_start_time']) }}" class="discount_start_time" id="discount_start_time">
+                                                            <input type="date" name="discount_start_time" value="{{ date('Y-m-d', $dataAll['dataProduct']['discount_start_time']) }}" class="discount_start_time" id="discount_start_time">
                                                         </div>
                                                         <div class="box_bkm_ngaykt box_input_infor">
                                                             <label class="form-label font_s13 line_h16 font_w500 cl_000">Ngày kết thúc <span style="color:red">*</span></label>
-                                                            <input type="date" name="discount_end_time" value="{{ date('Yy-m-d', $dataAll['dataProduct']['discount_end_time']) }}" class="discount_end_time" id="discount_end_time">
+                                                            <input type="date" name="discount_end_time" value="{{ date('Y-m-d', $dataAll['dataProduct']['discount_end_time']) }}" class="discount_end_time" id="discount_end_time">
                                                         </div>
                                                     </div>
                                                 </div>

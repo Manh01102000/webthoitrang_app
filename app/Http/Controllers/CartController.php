@@ -260,6 +260,7 @@ class CartController extends Controller
 
                 $orders[] = [
                     'conf_code_order' => $code_order,
+                    'conf_cart_id' => $cart_id,
                     'conf_user_id' => $user_id,
                     'conf_product_code' => $cart->cart_product_code,
                     'conf_product_amount' => $cart->cart_product_amount,

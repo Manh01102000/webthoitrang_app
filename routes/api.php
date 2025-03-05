@@ -13,6 +13,8 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ChangePasswordController;
 // Giỏ hàng
 use App\Http\Controllers\CartController;
+// Xác nhận đơn hàng
+use App\Http\Controllers\ConfirmOrderController;
 // ========================AJAX================================
 // API kiểm tra tài khoản tồn tại
 Route::post('/check_account_register', [RegisterController::class, 'CheckAccountRegister']);
@@ -35,7 +37,7 @@ Route::post('/getDistrics', [ApiController::class, 'getDistrics']);
 // Lấy xã phường không theo id
 Route::post('/getCommunes', [ApiController::class, 'getCommunes']);
 // Lấy quận huyện theo id
-Route::post('/getDistricsByID', [ApiController::class, 'getDistricsByID']);
+Route::post('/getDistrictsByID', [ApiController::class, 'getDistrictsByID']);
 // lấy xã phường theo id
 Route::post('/getCommunesByID', [ApiController::class, 'getCommunesByID']);
 // lấy danh mục sản phẩm id cha
@@ -44,6 +46,10 @@ Route::post('/getCategoryByID', [ApiController::class, 'getCategoryByID']);
 Route::post('/AddToCart', [CartController::class, 'AddToCart']);
 Route::post('/updateCartCountBuy', [CartController::class, 'updateCartCountBuy']);
 Route::post('/ConfirmOrder', [CartController::class, 'ConfirmOrder']);
+// =====================Xác nhận đơn hàng======================================
+Route::post('/AddDataInforship', [ConfirmOrderController::class, 'AddDataInforship']);
+Route::post('/SetShipDefalt', [ConfirmOrderController::class, 'SetShipDefalt']);
+Route::post('/PayMent', [ConfirmOrderController::class, 'PayMent']);
 // =================API Cập nhật==============================
 // Cập nhật tài khoản
 Route::post('/AccountUpdate', [managerAccountController::class, 'AccountUpdate']);

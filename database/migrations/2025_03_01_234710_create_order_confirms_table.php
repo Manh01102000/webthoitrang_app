@@ -14,6 +14,8 @@ class CreateOrderConfirmsTable extends Migration
             $table->string('conf_code_order')->nullable();
             // id người mua
             $table->integer('conf_user_id')->default('0');
+            // id giỏ hàng
+            $table->integer('conf_cart_id')->default('0');
             // mã sản phẩm
             $table->string('conf_product_code')->nullable();
             // Số lượng sản phẩm
