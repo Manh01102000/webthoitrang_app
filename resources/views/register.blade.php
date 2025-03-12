@@ -28,8 +28,6 @@
     @include('layouts.common_library')
     <!-- link css trang chủ -->
     <link rel="stylesheet" href="{{ asset('css/register.css') }}?v={{ time() }}">
-    <!-- link js chứa hàm chung -->
-    <script src="{{ asset('js/function_general.js') }}?v={{ time() }}"></script>
     <!-- link js trang chủ -->
     <script src="{{ asset('js/register.js') }}?v={{ time() }}"></script>
 </head>

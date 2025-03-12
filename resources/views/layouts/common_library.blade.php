@@ -26,7 +26,8 @@
 <!-- font awesome -->
 <link rel="preload" href="{{ asset('css/font-awesome.min.css') }}" media="all"/>
 <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" />
-
+<!-- link js chứa hàm chung -->
+<script src="{{ asset('js/function_general.js') }}?v={{ time() }}" defer></script>
 <!-- csrf token (bắt buộc thêm để thực hiện giao thức HTTP) -->
 <!-- CSRF (Cross-Site Request Forgery) token là một cơ chế bảo mật bắt buộc trong Laravel 
 để ngăn chặn các cuộc tấn công giả mạo request từ trang khác. -->

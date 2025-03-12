@@ -183,12 +183,13 @@ function login(e) {
             },
             success: function (data) {
                 $("#loading").hide();
-                if (data && data.result) {
-                    alert(data.message);
-                    location.href = '/';
-                } else {
-                    alert(data.message);
-                }
+                console.log(data);
+                // if (data && data.result) {
+                //     alert(data.message);
+                //     location.href = '/';
+                // } else {
+                //     alert(data.message);
+                // }
             },
         });
     }

@@ -44,6 +44,7 @@ class ProductRepository implements ProductRepositoryInterface
             // Lấy dữ liệu từ mảng `$data`
             $product_code = $data["product_code"] ?? null;
             $product_name = $data["product_name"] ?? null;
+            $product_alias = $data["product_name"] ? replaceTitle($data["product_name"])  : null;
             $product_description = $data["product_description"] ?? null;
             $category = $data["category"] ?? null;
             $category_code = $data["category_code"] ?? null;
@@ -72,6 +73,7 @@ class ProductRepository implements ProductRepositoryInterface
                 'product_code' => $product_code,
                 'product_admin_id' => $admin_id,
                 'product_name' => $product_name,
+                'product_alias' => $product_alias,
                 'product_active' => 0,
                 'product_description' => $product_description,
                 'product_unit' => '',
@@ -148,6 +150,7 @@ class ProductRepository implements ProductRepositoryInterface
             // Lấy dữ liệu từ mảng `$data`
             $product_id = $data["product_id"];
             $product_name = $data["product_name"] ?? null;
+            $product_alias = $data["product_name"] ? replaceTitle($data["product_name"])  : null;
             $product_description = $data["product_description"] ?? null;
             $category = $data["category"] ?? null;
             $category_code = $data["category_code"] ?? null;
@@ -211,6 +214,7 @@ class ProductRepository implements ProductRepositoryInterface
             product::where("product_id", $product_id)->update([
                 'product_admin_id' => $admin_id,
                 'product_name' => $product_name,
+                'product_alias' => $product_alias,
                 'product_description' => $product_description,
                 'product_unit' => '',
                 'category' => $category,

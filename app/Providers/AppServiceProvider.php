@@ -15,6 +15,15 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
+    /**
+     * Phương thức register() là một phần của Dependency Injection Container trong Laravel!
+     * Phương thức register() của một ServiceProvider trong Laravel. Nó sử dụng $this->app->bind() để đăng ký binding 
+     * giữa một interface và một class cụ thể.
+     * Laravel có Service Container – một hệ thống Dependency Injection mạnh mẽ.
+     * Nó cho phép bạn đăng ký các dependency và Laravel sẽ tự động inject chúng khi cần.
+     * Khi Laravel thấy một class cần ProductRepositoryInterface, nó sẽ tự động cung cấp một instance của ProductRepository.
+     * Giúp tự động quản lý dependency, code gọn hơn, dễ bảo trì.
+    */
     public function register(): void
     {
         // Đăng ký các dịch vụ của bạn

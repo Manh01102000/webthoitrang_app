@@ -61,13 +61,13 @@
 }
 
 .banner_top {
-    max-width: 1366px;
+    max-width: 100%;
     width: 100%;
     min-height: 200px;
 }
 
 .banner_content {
-    max-width: 1366px;
+    max-width: 100%;
     width: 100%;
 }
 

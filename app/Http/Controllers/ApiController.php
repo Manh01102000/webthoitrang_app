@@ -45,8 +45,10 @@ class ApiController extends Controller
                         ->orWhereNull('manage_discounts.discount_active'); // Nếu không có giảm giá thì vẫn giữ lại sản phẩm
                 })
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -74,8 +76,10 @@ class ApiController extends Controller
                         ->orWhereNull('manage_discounts.discount_active'); // Nếu không có giảm giá thì vẫn giữ lại sản phẩm
                 })
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -100,8 +104,10 @@ class ApiController extends Controller
                 ->where('products.product_active', 1)
                 ->where('manage_discounts.discount_active', 1)
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -129,8 +135,10 @@ class ApiController extends Controller
                 ->where('manage_discounts.discount_start_time', '<=', now())
                 ->where('manage_discounts.discount_end_time', '>=', now())
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -157,8 +165,10 @@ class ApiController extends Controller
                     ->where('products.product_active', 1)
                     ->where('manage_discounts.discount_active', 1)
                     ->select(
+                        'products.product_id',
                         'products.product_code',
                         'products.product_name',
+                        'products.product_alias',
                         'products.product_create_time',
                         'products.product_brand',
                         'products.product_sizes',

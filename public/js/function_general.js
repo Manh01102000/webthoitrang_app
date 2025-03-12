@@ -92,3 +92,29 @@ function format_money(number, decimals = 2, dec_point = '.', thousands_sep = ','
 
     return parts.join(dec_point);
 }
+
+function timeAgo(timestamp) {
+    const now = Math.floor(Date.now() / 1000); // Lấy thời gian hiện tại dưới dạng timestamp (giây)
+    const secondsAgo = now - timestamp;
+    if (secondsAgo < 60) {
+        return `${secondsAgo} giây trước`;
+    } else if (secondsAgo < 3600) {
+        const minutesAgo = Math.floor(secondsAgo / 60);
+        return `${minutesAgo} phút trước`;
+    } else if (secondsAgo < 86400) {
+        const hoursAgo = Math.floor(secondsAgo / 3600);
+        return `${hoursAgo} giờ trước`;
+    } else if (secondsAgo < 604800) {
+        const daysAgo = Math.floor(secondsAgo / 86400);
+        return `${daysAgo} ngày trước`;
+    } else if (secondsAgo < 2592000) {
+        const weeksAgo = Math.floor(secondsAgo / 604800);
+        return `${weeksAgo} tuần trước`;
+    } else if (secondsAgo < 31536000) {
+        const monthsAgo = Math.floor(secondsAgo / 2592000);
+        return `${monthsAgo} tháng trước`;
+    } else {
+        const yearsAgo = Math.floor(secondsAgo / 31536000);
+        return `${yearsAgo} năm trước`;
+    }
+}

@@ -10,12 +10,12 @@ class managerAccountController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Quản Lý Tài Khoản - Fashion Houses",
@@ -23,19 +23,25 @@ class managerAccountController extends Controller
             'seo_keyword' => "Fashion Houses tài khoản, quản lý tài khoản, cập nhật thông tin cá nhân, bảo mật tài khoản, theo dõi đơn hàng, địa chỉ giao hàng, lịch sử mua sắm, tài khoản khách hàng, thời trang trực tuyến.",
             'canonical' => $domain . '/quan-ly-tai-khoan',
         ];
-        // LÂY DỮ LIỆU
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Quản lý tài khoản",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu === */
         $data = InForAccount();
         // lấy dữ liệu danh mục theo từng cấp
         $categoryTree = getCategoryTree();
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
         ];
-        // dd($dataAll);
-        // Trả về view
+        /** === Trả về view với dữ liệu === */
         return view('manager_account', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

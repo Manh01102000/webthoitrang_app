@@ -10,6 +10,11 @@ class CartController extends Controller
 {
     public function index()
     {
+        /** === Khai báo thư viện sử dụng === */
+        $dataversion = [
+            'useslick' => 0,
+            'useselect2' => 1,
+        ];
         /** === 1. Lấy thông tin người dùng từ cookie & giải mã === */
         $UID_ENCRYPT = $_COOKIE['UID'] ?? 0;
         $UT_ENCRYPT = $_COOKIE['UT'] ?? 0;
@@ -51,7 +56,7 @@ class CartController extends Controller
 
         $datacart = $dbcart ? $dbcart->toArray() : [];
 
-        /** === 3. Chuẩn bị dữ liệu SEO === */
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Giỏ Hàng Của Bạn - Fashion Houses",
@@ -59,8 +64,16 @@ class CartController extends Controller
             'seo_keyword' => "Fashion Houses giỏ hàng, sản phẩm thời trang, mua sắm thời trang, thanh toán đơn hàng, thời trang cao cấp, giỏ hàng trực tuyến, xu hướng thời trang, đặt hàng thời trang.",
             'canonical' => $domain . '/gio-hang',
         ];
-
-        /** === 4. Chuẩn bị dữ liệu giao diện (UI) === */
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Giỏ hàng",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu giao diện (UI) === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
@@ -69,14 +82,12 @@ class CartController extends Controller
         $categoryTree = getCategoryTree();
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
-            'datacart' => $datacart
+            'datacart' => $datacart,
         ];
 
-        /** === 5. Trả về view 'cart' với dữ liệu === */
+        /** === Trả về view với dữ liệu === */
         return view('cart', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

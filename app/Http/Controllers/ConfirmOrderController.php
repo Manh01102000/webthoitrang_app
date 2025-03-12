@@ -20,12 +20,19 @@ class ConfirmOrderController extends Controller
 {
     public function index()
     {
-        // ======= 1. Khai báo thư viện sử dụng =======
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-
+        /** === Xây dựng SEO === */
+        $domain = env('DOMAIN_WEB');
+        $dataSeo = [
+            'seo_title' => "Xác Nhận Đơn Hàng - Fashion Houses",
+            'seo_desc' => "Cảm ơn bạn đã đặt hàng tại Fashion Houses! Kiểm tra chi tiết đơn hàng và xác nhận giao dịch thành công. Chúng tôi sẽ sớm giao hàng đến bạn.",
+            'seo_keyword' => "Fashion Houses xác nhận đơn hàng, đơn hàng thành công, trạng thái đơn hàng, theo dõi đơn hàng, mua sắm thời trang, đơn hàng Fashion Houses, giao dịch thành công, thời trang cao cấp.",
+            'canonical' => $domain . '/xac-nhan-don-hang',
+        ];
         // ======= 2. Lấy dữ liệu địa lý (Tỉnh, Huyện, Xã) =======
         $cities = Cache::rememberForever('cities', function () {
             return City::all()->toArray();
@@ -87,14 +94,29 @@ class ConfirmOrderController extends Controller
                 'order_confirms.conf_cart_id',
             ])
             ->get();
-        if ($dbconfirm->isEmpty()) { 
+        if ($dbconfirm->isEmpty()) {
             return redirect('/gio-hang')->with('error', 'Không xác định được đơn hàng.');
         }
         $dataconfirm = $dbconfirm->toArray();
         $order_code = 'A' . mt_rand(11111, 99999);
-        // ======= 6. Tổng hợp toàn bộ dữ liệu =======
+        /** === 6. Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Giỏ hàng",
+                'url' => '/gio-hang',
+                'class' => 'otherssite'
+            ],
+            [
+                'title' => "Xác nhận đơn hàng",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        // ======= 7. Tổng hợp toàn bộ dữ liệu =======
         $dataAll = [
             'data' => InForAccount(),
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => getCategoryTree(),
             'datacity' => $cities,
             'datadistrict' => $districs,
@@ -104,16 +126,9 @@ class ConfirmOrderController extends Controller
             'address_default' => $defaultAddress,
             'order_code' => $order_code
         ];
-        // ======= 7. Cấu hình SEO =======
-        $domain = env('DOMAIN_WEB');
-        $dataSeo = [
-            'seo_title' => "Xác Nhận Đơn Hàng - Fashion Houses",
-            'seo_desc' => "Cảm ơn bạn đã đặt hàng tại Fashion Houses! Kiểm tra chi tiết đơn hàng và xác nhận giao dịch thành công. Chúng tôi sẽ sớm giao hàng đến bạn.",
-            'seo_keyword' => "Fashion Houses xác nhận đơn hàng, đơn hàng thành công, trạng thái đơn hàng, theo dõi đơn hàng, mua sắm thời trang, đơn hàng Fashion Houses, giao dịch thành công, thời trang cao cấp.",
-            'canonical' => $domain . '/xac-nhan-don-hang',
-        ];
 
-        // ======= 8. Trả về View =======
+
+        /** === Trả về view với dữ liệu === */
         return view('confirmOrder', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

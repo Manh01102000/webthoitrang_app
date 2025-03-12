@@ -7,7 +7,9 @@ use App\Models\cart;
 use Illuminate\Support\Facades\Cache;
 // Lưu log
 use Illuminate\Support\Facades\Log;
-
+// gọi để lấy email
+use App\Mail\CustomEmail;
+use Illuminate\Support\Facades\Mail;
 // Hàm mã hóa và giải mã sử dụng thuật toán đối xứng AES-256-CBC (AES 256 byte)
 // 🔒 Hàm mã hóa dữ liệu
 function encryptData($data, $key)
@@ -19,7 +21,6 @@ function encryptData($data, $key)
     // Gộp IV + dữ liệu mã hóa rồi mã hóa tiếp bằng Base64
     return base64_encode($iv . $encrypted);
 }
-
 // 🔓 Hàm giải mã dữ liệu
 function decryptData($data, $key)
 {
@@ -32,7 +33,6 @@ function decryptData($data, $key)
     // Giải mã dữ liệu
     return openssl_decrypt($encrypted, "AES-256-CBC", $key, 0, $iv);
 }
-
 // Hàm Lấy link ảnh avatar
 if (!function_exists('geturlimageAvatar')) {
     function geturlimageAvatar($time_stamp)
@@ -45,7 +45,6 @@ if (!function_exists('geturlimageAvatar')) {
         return $dir;
     }
 }
-
 // Hàm Lấy link ảnh avatar admin
 if (!function_exists('geturlimageAvatarAdmin')) {
     function geturlimageAvatarAdmin($time_stamp)
@@ -400,6 +399,13 @@ if (!function_exists('replaceTitle')) {
         return $title;
     }
 }
+// Hàm giới hạn text hiển thị
+if (!function_exists('limitText')) {
+    function limitText($text, $limit, $suffix = '...')
+    {
+        return mb_strimwidth($text, 0, $limit, $suffix, 'UTF-8');
+    }
+}
 //Hàm lấy thời gian
 if (!function_exists('lay_tgian')) {
     function lay_tgian($tgian)
@@ -459,7 +465,26 @@ if (!function_exists('timeAgo')) {
         }
     }
 }
-//
+// Hàm render breadcrumb
+if (!function_exists('renderBreadcrumb')) {
+    function renderBreadcrumb($breadcrumbItems)
+    {
+        // Render breadcrumb HTML
+        $html = '<section class="bread-crumb"><div class="breadcrumb-container"><ul class="breadcrumb dp_fl_fd_r">';
+
+        foreach ($breadcrumbItems as $item) {
+            if ($item['url']) {
+                $html .= '<li><a href="' . $item['url'] . '" target="_blank" class="' . $item['class'] . '">' . $item['title'] . '</a></li>';
+            } else {
+                $html .= '<li class="' . $item['class'] . ' dp_fl_fd_r">' . $item['title'] . '</li>';
+            }
+        }
+
+        $html .= '</ul></div></section>';
+
+        return $html;
+    }
+}
 // link chi tiet ung vien
 function rewriteUV($id, $name)
 {
@@ -468,6 +493,44 @@ function rewriteUV($id, $name)
         $alias = 'nguoi-ngoai-quoc';
     }
     return "/" . $alias . "-us" . $id;
+}
+// link chi tiet sản phẩm
+function rewriteProduct($id, $alias, $text)
+{
+    // Đảm bảo ID là số
+    $id = intval($id);
+    if ($id <= 0) {
+        return null; // ID không hợp lệ
+    }
+
+    // Nếu alias rỗng, tạo alias từ text
+    if (empty($alias)) {
+        $alias = !empty($text) ? replaceTitle($text) : "san-pham";
+    }
+
+    // Loại bỏ khoảng trắng thừa
+    $alias = trim($alias);
+
+    return "/san-pham/" . $alias . "-" . $id;
+}
+// link chi tiet tin tin
+function rewriteNews($id, $alias, $text)
+{
+    // Đảm bảo ID là số
+    $id = intval($id);
+    if ($id <= 0) {
+        return null; // ID không hợp lệ
+    }
+
+    // Nếu alias rỗng, tạo alias từ text
+    if (empty($alias)) {
+        $alias = !empty($text) ? replaceTitle($text) : "bai-viet";
+    }
+
+    // Loại bỏ khoảng trắng thừa
+    $alias = trim($alias);
+
+    return "/bai-viet/" . $alias . "-" . $id;
 }
 // Lấy dữ liệu NTD Hoặc UV
 function InForAccount()
@@ -594,7 +657,6 @@ function InForAccountAdmin($admin_id)
     }
     return $dataAccount;
 }
-
 // Lấy dữ liệu danh mục
 if (!function_exists('InForCategory')) {
     function InForCategory()
@@ -606,9 +668,7 @@ if (!function_exists('InForCategory')) {
         return $category;
     }
 }
-
 // Lấy dữ liệu danh mục con (dùng đệ quy: kỹ thuật mà một hàm tự gọi lại chính nó cho đến khi đạt điều kiện dừng)
-
 if (!function_exists('getCategoryTree')) {
     function getCategoryTree($parent_id = 0)
     {
@@ -776,6 +836,38 @@ if (!function_exists('UploadAvatar')) {
     }
 }
 
+// Làm UploadImageVideoComment
+if (!function_exists('UploadImageVideoComment')) {
+    function UploadImageVideoComment($img_temp, $name, $time, $extension, $type = 'product')
+    {
+        // Định nghĩa thư mục lưu file
+        $basePath = "upload/comment/$type";
+        $year = date('Y', $time);
+        $month = date('m', $time);
+        $day = date('d', $time);
+        $folderPath = "$basePath/$year/$month/$day";
+
+        // Kiểm tra và tạo thư mục nếu chưa tồn tại
+        if (!is_dir($folderPath)) {
+            mkdir($folderPath, 0777, true);
+        }
+
+        // Kiểm tra file tạm có tồn tại không
+        if (!file_exists($img_temp)) {
+            return false;
+        }
+
+        // Xử lý tên file an toàn hơn
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', pathinfo($name, PATHINFO_FILENAME)); // Loại bỏ ký tự đặc biệt
+        $image = $safeName . '-' . time();
+        $pathTo = "$folderPath/$image.$extension";
+
+        // Lưu file vào thư mục
+        return move_uploaded_file($img_temp, $pathTo) ? $pathTo : false;
+    }
+}
+
+
 // Làm lấy link video, ảnh sản phẩm
 if (!function_exists('getUrlImageVideoProduct')) {
     function getUrlImageVideoProduct($time, $type = 1)
@@ -826,6 +918,42 @@ function productSizes()
         'XXL',
     ];
     return $product_sizes;
+}
+
+function DataEmoji()
+{
+    return [
+        [
+            'url' => 'images/comment_icon/icon-like.svg',
+            'data' => 1,
+            'text' => 'Thích',
+        ],
+        [
+            'url' => 'images/comment_icon/icon-love.svg',
+            'data' => 2,
+            'text' => 'Yêu thích',
+        ],
+        [
+            'url' => 'images/comment_icon/icon-smile.svg',
+            'data' => 3,
+            'text' => 'Haha',
+        ],
+        [
+            'url' => 'images/comment_icon/icon-wow.svg',
+            'data' => 4,
+            'text' => 'Wow',
+        ],
+        [
+            'url' => 'images/comment_icon/icon-sad.svg',
+            'data' => 5,
+            'text' => 'Buồn',
+        ],
+        [
+            'url' => 'images/comment_icon/icon-angry.svg',
+            'data' => 6,
+            'text' => 'Phẫn nộ',
+        ]
+    ];
 }
 
 if (!function_exists('FindCategoryByCatId')) {
@@ -938,4 +1066,15 @@ function apiResponse($status, $message, $data = [], $result = true, $httpCode = 
         'data' => $data,
         'result' => $result
     ], $httpCode);
+}
+
+//==============Hàm gửi email====================
+//khi xác thực tài khoản
+function sendOTPEmail($name, $email, $subject = "Email xác thực tài khoản", $otp)
+{
+    //Khai báo đối tượng
+    $CustomEmail = new CustomEmail($name, $subject, $otp);
+    Mail::to($email)->queue($CustomEmail);
+    // trả về kết quả
+    return back()->with('success', 'Email xác nhận đã được gửi!');
 }

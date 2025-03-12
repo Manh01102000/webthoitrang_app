@@ -17,7 +17,7 @@
                 <div class="content_home_center_right">
                     <div class="ct_home_center_frame w100 d_flex">
                         @foreach ($dataAll['newProducts'] as $key => $newProducts)
-                            <?php
+                        <?php
                             $product_images = explode(',', $newProducts['product_images']);
                             $url_avarta = getUrlImageVideoProduct($newProducts['product_create_time'], 1) . $product_images[0];
                             $product_sizes = explode(',',$newProducts['product_sizes']);
@@ -83,11 +83,13 @@
                                 <div class="hct_item_infor_detail">
                                     <div class="infor_detail_top">
                                         <div class="infor_detail_top_title">
-                                            <img class="infor_detail_img lazyload" 
-                                            onerror="this.onerror=null; this.src='{{ asset('images/icon/load.gif') }}';"
-                                            src="{{ asset('images/product_sample/anh1.jpg') }}"
-                                            data-src="{{ asset($url_avarta) }}?v={{ time() }}" alt="anh">
-                                            <p class="infor_detail_name font_s16 line_h20 font_w500">{{ $newProducts['product_name'] }}</p>
+                                            <a href="{{ rewriteProduct($newProducts['product_id'],$newProducts['product_alias'],$newProducts['product_name']) }}" rel="nofollow">
+                                                <img class="infor_detail_img lazyload" 
+                                                onerror="this.onerror=null; this.src='{{ asset('images/icon/load.gif') }}';"
+                                                src="{{ asset('images/product_sample/anh1.jpg') }}"
+                                                data-src="{{ asset($url_avarta) }}?v={{ time() }}" alt="{{ $newProducts['product_name'] }}">
+                                            </a>
+                                            <a href="{{ rewriteProduct($newProducts['product_id'],$newProducts['product_alias'],$newProducts['product_name']) }}" rel="nofollow" class="infor_detail_name font_s16 line_h20 font_w500">{{ $newProducts['product_name'] }}</a>
                                         </div>
                                         <div class="infor_detail_top_des">
                                             <p class="infor_detail_productcode">Mã sản phẩm: <span class="span_prdcode">{{ $newProducts['product_code'] }}</span></p>

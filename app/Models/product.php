@@ -15,6 +15,7 @@ class product extends Model
         'product_code',
         'product_admin_id',
         'product_name',
+        'product_alias',
         'product_active',
         'product_description',
         'product_unit',

@@ -10,13 +10,12 @@ class HomeController extends Controller
 {
     public function Home()
     {
-        // ================Cấu hình sử dụng thư viện===============
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-
-        // ====================Cấu hình SEO===============================
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Fashion Houses – Shop Quần Áo Thời Trang Cao Cấp | Mới Nhất " . date('Y'),
@@ -25,7 +24,7 @@ class HomeController extends Controller
             'canonical' => $domain
         ];
 
-        // ==================Lấy dữ liệu tài khoản==================
+        /** === Chuẩn bị dữ liệu === */
         $data = InForAccount();
         // ==================Lấy sản phẩm bán chạy===============
         $topProducts = Cache::remember('top_products', 300, function () {
@@ -36,8 +35,10 @@ class HomeController extends Controller
                         ->orWhereNull('manage_discounts.discount_active'); // Nếu không có giảm giá thì vẫn giữ lại sản phẩm
                 })
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -68,8 +69,10 @@ class HomeController extends Controller
                         ->orWhereNull('manage_discounts.discount_active'); // Nếu không có giảm giá thì vẫn giữ lại sản phẩm
                 })
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -97,8 +100,10 @@ class HomeController extends Controller
                 ->where('products.product_active', 1)
                 ->where('manage_discounts.discount_active', 1)
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -127,8 +132,10 @@ class HomeController extends Controller
                 ->where('manage_discounts.discount_start_time', '<=', now())
                 ->where('manage_discounts.discount_end_time', '>=', now())
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',
@@ -159,8 +166,10 @@ class HomeController extends Controller
                 ->where('products.product_active', 1)
                 ->where('manage_discounts.discount_active', 1)
                 ->select(
+                    'products.product_id',
                     'products.product_code',
                     'products.product_name',
+                    'products.product_alias',
                     'products.product_create_time',
                     'products.product_brand',
                     'products.product_sizes',

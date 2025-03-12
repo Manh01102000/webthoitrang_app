@@ -40,14 +40,9 @@
         <!-- content -->
         <div class="container-page">
             <div class="container-blog">
-                <section class="bread-crumb">
-                    <div class="breadcrumb-container">
-                        <ul class="breadcrumb dp_fl_fd_r">
-                            <li><a href="/" target="_blank" class="otherssite">Trang chủ</a></li>
-                            <li class="thissite dp_fl_fd_r">Tin tức</li>
-                        </ul>
-                    </div>
-                </section>
+                <!-- breadcrumb -->
+                {!! renderBreadcrumb($dataAll['breadcrumbItems']) !!}
+                <!-- end breadcrumb -->
                 <div class="frame-blog-all">
                     <!-- Bài viết nổi bật -->
                     <div class="frame-blog blog-hot">

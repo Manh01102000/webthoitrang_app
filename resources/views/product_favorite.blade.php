@@ -28,8 +28,6 @@
     @include('layouts.common_library')
     <!-- link css trang chủ -->
     <link rel="stylesheet" href="{{ asset('css/manager_account/product_favorite.css') }}?v={{ time() }}">
-    <!-- link js chứa hàm chung -->
-    <script src="{{ asset('js/function_general.js') }}?v={{ time() }}"></script>
     <!-- link js trang chủ -->
     <script src="{{ asset('js/manager_account/product_favorite.js') }}?v={{ time() }}"></script>
 </head>
@@ -42,14 +40,9 @@
         <!-- content -->
         <div class="container-page">
             <div class="container-general-allpage">
-                <section class="bread-crumb">
-                    <div class="breadcrumb-container">
-                        <ul class="breadcrumb dp_fl_fd_r">
-                            <li><a href="/" target="_blank" class="otherssite">Trang chủ</a></li>
-                            <li class="thissite dp_fl_fd_r">Sản phẩm yêu thích</li>
-                        </ul>
-                    </div>
-                </section>
+                <!-- breadcrumb -->
+                {!! renderBreadcrumb($dataAll['breadcrumbItems']) !!}
+                <!-- end breadcrumb -->
                 <div class="frame-manageraccount-all">
                     @include('layouts.manager_account.sidebar')
                     <main class="main-container">

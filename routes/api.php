@@ -15,6 +15,8 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CartController;
 // Xác nhận đơn hàng
 use App\Http\Controllers\ConfirmOrderController;
+// comment
+use App\Http\Controllers\CommentController;
 // ========================AJAX================================
 // API kiểm tra tài khoản tồn tại
 Route::post('/check_account_register', [RegisterController::class, 'CheckAccountRegister']);
@@ -50,8 +52,13 @@ Route::post('/ConfirmOrder', [CartController::class, 'ConfirmOrder']);
 Route::post('/AddDataInforship', [ConfirmOrderController::class, 'AddDataInforship']);
 Route::post('/SetShipDefalt', [ConfirmOrderController::class, 'SetShipDefalt']);
 Route::post('/PayMent', [ConfirmOrderController::class, 'PayMent']);
-// =================API Cập nhật==============================
+// =================API Cập nhật tài khoản==============================
 // Cập nhật tài khoản
 Route::post('/AccountUpdate', [managerAccountController::class, 'AccountUpdate']);
 // Đổi Mật khẩu
 Route::post('/ChangePassword', [ChangePasswordController::class, 'ChangePassword']);
+// =================API luồng bình luận==============================
+Route::post('/SubmitEmoji', [CommentController::class, 'SubmitEmoji']);
+Route::post('/AddComment', [CommentController::class, 'AddComment']);
+// API debug token
+Route::post('/debugToken', [LoginController::class, 'debugToken']);

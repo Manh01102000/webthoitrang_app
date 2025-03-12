@@ -16,8 +16,6 @@
     <link rel="stylesheet" href="{{ asset('css/admin/home.css') }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset('css/admin/sidebar.css') }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset('css/admin/add_product.css') }}?v={{ time() }}">
-    <!-- link js chứa hàm chung -->
-    <script src="{{ asset('js/function_general.js') }}?v={{ time() }}"></script>
     <!-- link js trang chủ -->
     <script src="{{ asset('js/admin/home.js') }}?v={{ time() }}"></script>
     <!-- Nhúng ckeditor -->

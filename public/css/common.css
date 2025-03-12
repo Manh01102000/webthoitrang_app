@@ -212,6 +212,10 @@ img {
     color: #333;
 }
 
+.cl_999 {
+    color: #999;
+}
+
 .error {
     color: red;
     font-size: 15px;
@@ -255,6 +259,10 @@ img {
 
 .line_h30 {
     line-height: 30px;
+}
+
+.line_h28 {
+    line-height: 28px;
 }
 
 .line_h24 {
@@ -352,6 +360,10 @@ img {
     flex-direction: column;
 }
 
+.fl_wrap {
+    flex-wrap: wrap;
+}
+
 .jc_sb {
     justify-content: space-between;
 }
@@ -360,8 +372,16 @@ img {
     justify-content: end;
 }
 
+.al_st {
+    align-items: start;
+}
+
 .al_ct {
     align-items: center;
+}
+
+.al_end {
+    align-items: end;
 }
 
 .gap_5 {

@@ -6,6 +6,7 @@ Disallow:
 Crawl-delay: 5
 
 # Chặn trang nhạy cảm không cần index (admin, giỏ hàng, login...)
+Disallow: /san-pham/
 Disallow: /admin/
 Disallow: /dang-nhap-tai-khoan/
 Disallow: /dang-ky-tai-khoan/

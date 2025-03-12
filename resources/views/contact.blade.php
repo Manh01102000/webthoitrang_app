@@ -40,14 +40,9 @@
         <!-- content -->
         <div class="container-page">
             <div class="container-contact">
-                <section class="bread-crumb">
-                    <div class="breadcrumb-container">
-                        <ul class="breadcrumb dp_fl_fd_r">
-                            <li><a href="/" target="_blank" class="otherssite">Trang chủ</a></li>
-                            <li class="thissite dp_fl_fd_r">Liên hệ</li>
-                        </ul>
-                    </div>
-                </section>
+                <!-- breadcrumb -->
+                {!! renderBreadcrumb($dataAll['breadcrumbItems']) !!}
+                <!-- end breadcrumb -->
                 <div class="frame-contact-all">
                     <div class="contact-all-left">
                         <div class="contact">

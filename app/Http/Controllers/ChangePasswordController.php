@@ -10,12 +10,13 @@ class ChangePasswordController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Đổi Mật Khẩu Tài Khoản - Fashion Houses",
@@ -23,19 +24,31 @@ class ChangePasswordController extends Controller
             'seo_keyword' => "Fashion Houses đổi mật khẩu, cập nhật mật khẩu, bảo mật tài khoản, đổi mật khẩu an toàn, tài khoản thời trang, bảo vệ thông tin, bảo mật mua sắm trực tuyến.",
             'canonical' => $domain . '/quan-ly-tai-khoan',
         ];
-        // LÂY DỮ LIỆU
+
+        /** === Lấy dữ liệu tài khoản === */
         $data = InForAccount();
-        // lấy dữ liệu danh mục theo từng cấp
+
+        /** === Lấy dữ liệu danh mục theo từng cấp === */
         $categoryTree = getCategoryTree();
+
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Thay đổi mật khẩu",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+
+        /** === Chuẩn bị dữ liệu cho dataAll === */
         $dataAll = [
             'data' => $data,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
+            'breadcrumbItems' => $breadcrumbItems,
         ];
-        // dd($dataAll);
-        // Trả về view
+
+        /** === Trả về view với dữ liệu === */
         return view('change_password', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,
