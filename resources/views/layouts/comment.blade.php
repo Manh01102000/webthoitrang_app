@@ -110,29 +110,11 @@
     </div>
     
     <!-- Danh sách bình luận -->
-    <ul class="comment-list" id="comment-list">
-        @if (!empty($DBComment))
-            @foreach ($DBComment as $key => $comment)
-                @php $use_logo = !empty($comment['use_logo']) ? geturlimageAvatar($comment['use_create_time']) . $comment['use_logo'] : ''  @endphp
-                <li class="show-comment" comment-id="{{ $comment['comment_id'] }}">
-                    <img onerror='this.onerror=null;this.src="/images/home/logoweberror.png";' src="/images/home/logoweberror.png" data-src="{{ asset($use_logo) }}?v={{ time() }}" class="lazyload show-comment-avatar" alt="User Avatar">
-                    <div class="comment-content">
-                        <div class="show-box-comment">
-                            <p class="name-user-comment">{{ $comment['use_name'] }}</p>
-                            <p class="name-user-text">{{ $comment['comment_content'] }}</p>
-                        </div>
-                        <div class="box-comment-actions">
-                            <div class="actions">
-                                <span class="actions-text actions-reply" onclick="replyComment(this)">Phản hồi</span>
-                                <span class="actions-text actions-delete cl_red" onclick="DeleteComment(this)">Xóa</span>
-                            </div>
-                            <span class="comment-time">{{ timeAgo($comment['createdAt']) }}</span>
-                        </div>
-                        <ul class="reply-list"></ul>
-                    </div>
-                </li>
-            @endforeach
-        @endif
-    </ul>
+    @if (!empty($DBComment))
+        {!! renderComments($DBComment, $totalComments, $dataAll['data-id'], (isset($_COOKIE['UID']) ? $_COOKIE['UID'] : 0)) !!}
+    @else
+        <ul class="comment-list"></ul>    
+    @endif
+
 </div>
 <script src="{{ asset('js/layouts/comment.js') }}?v={{ time() }}" defer></script>

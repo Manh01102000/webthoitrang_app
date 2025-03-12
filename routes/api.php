@@ -60,5 +60,7 @@ Route::post('/ChangePassword', [ChangePasswordController::class, 'ChangePassword
 // =================API luồng bình luận==============================
 Route::post('/SubmitEmoji', [CommentController::class, 'SubmitEmoji']);
 Route::post('/AddComment', [CommentController::class, 'AddComment']);
+Route::post('/load-more-comment', [CommentController::class, 'LoadMoreComment']);
+Route::post('/load-more-replies', [CommentController::class, 'LoadMoreReplies']);
 // API debug token
 Route::post('/debugToken', [LoginController::class, 'debugToken']);

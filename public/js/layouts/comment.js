@@ -95,17 +95,24 @@ function SubmitEmoji(e) {
     }
 }
 
+// render bình luận khi add
 function commentHtml(data, data_parents_id) {
     let commentData = data.comment;
     let userData = data.user;
+
+    let isReply = data_parents_id != 0; // Kiểm tra nếu là cấp 2
+
     // Cập nhật số lượt bình luận
-    let commentCount = $(".comment-section .comments_statistic").text().trim(); // Số bình luận ban đầu
-    console.log(commentCount);
+    let commentCount = $(".comment-section .comments_statistic").text().trim();
     $(".comment-section .comments_statistic").text(Number(commentCount) + 1);
-    // Thêm comment phía dưới
+
     let newComment =
         `<li class="show-comment" comment-id="${commentData.comment_id}">
-        <img onerror='this.onerror=null;this.src="/images/home/logoweberror.png";' src="/images/home/logoweberror.png" data-src="${userData.use_logo_full + "?v=" + (Date.now() / 1000)}" class="lazyload show-comment-avatar" alt="User Avatar">
+        <img onerror='this.onerror=null;this.src="/images/home/logoweberror.png";' 
+            src="/images/home/logoweberror.png" 
+            data-src="${userData.use_logo_full + "?v=" + (Date.now() / 1000)}" 
+            class="lazyload show-comment-avatar" 
+            alt="User Avatar">
         <div class="comment-content">
             <div class="show-box-comment">
                 <p class="name-user-comment">${userData.use_name}</p>
@@ -113,20 +120,21 @@ function commentHtml(data, data_parents_id) {
             </div>
             <div class="box-comment-actions">
                 <div class="actions">
-                    <span class="actions-text actions-reply" onclick="replyComment(this)">Phản hồi</span>
+                    ${!isReply ? `<span class="actions-text actions-reply" onclick="replyComment(this)">Phản hồi</span>` : ''}
                     <span class="actions-text actions-delete cl_red" onclick="DeleteComment(this)">Xóa</span>
                 </div>
                 <span class="comment-time">${timeAgo(commentData.createdAt)}</span>
             </div>
-            <ul class="reply-list"></ul>
+            ${!isReply ? `<ul class="reply-list"></ul>` : ''}
         </div>
     </li>`;
-    console.log(data_parents_id);
-    if (data_parents_id) {
-        $(`.show-comment[comment-id="${data_parents_id}"]`).find('.reply-list').append(newComment);
+
+    if (isReply) {
+        $(`.show-comment[comment-id="${data_parents_id}"]`).find('.reply-list').prepend(newComment);
     } else {
-        $("#comment-list").prepend(newComment);
+        $(".comment-list").prepend(newComment);
     }
+
     $("#comment-input").val("");
 }
 
@@ -166,10 +174,6 @@ function AddComment(e) {
         formData.append('data_comment_text', data_comment_text);
         if (data_file) formData.append('data_file', data_file); // Chỉ thêm nếu có ảnh
         if (data_parents_id) formData.append('data_parents_id', data_parents_id); // Chỉ thêm nếu có ảnh
-        console.log('data_id', data_id);
-        console.log('data_type', data_type);
-        console.log('data_comment_text', data_comment_text);
-        console.log('data_file', data_file); // Chỉ thêm nếu có ảnh
         $.ajax({
             type: "POST",
             url: "/api/AddComment",
@@ -182,7 +186,7 @@ function AddComment(e) {
                 $(e).prop("disabled", false).text("Gửi"); // Bật lại nút
                 $("#comment-input").val(""); // Xóa input sau khi gửi
                 commentHtml(response.data, data_parents_id)
-                alert(response.message || "Bình luận đã được gửi!");
+                // alert(response.message || "Bình luận đã được gửi!");
             },
             error: function (xhr) {
                 $("#loading").hide();
@@ -191,6 +195,141 @@ function AddComment(e) {
             }
         });
     }
+}
+
+// Render html bình luận khi nhấn "Xem thêm"
+function commentHtmlLoadMore(commentData, user_id) {
+    let useLogo = commentData.use_logo
+        ? `/${getUrlImageAvatar(commentData.use_create_time) + commentData.use_logo}?v=${Date.now() / 1000}`
+        : "/images/home/logoweberror.png";
+
+    let html = `<li class="show-comment" comment-id="${commentData.comment_id}">
+                    <img onerror='this.onerror=null;this.src="/images/home/logoweberror.png";' 
+                        src="/images/home/logoweberror.png" 
+                        data-src="${useLogo}?v=${Date.now()}"
+                        class="lazyload show-comment-avatar"
+                        alt="User Avatar">
+                    <div class="comment-content">
+                        <div class="show-box-comment">
+                            <p class="name-user-comment">${escapeHtml(commentData.use_name)}</p>
+                            <p class="name-user-text">${nl2br(escapeHtml(commentData.comment_content))}</p>
+                        </div>
+                        <div class="box-comment-actions">
+                            <div class="actions">`;
+
+    if (commentData.comment_parents_id === 0) {
+        html += `<span class="actions-text actions-reply" onclick="replyComment(this)">Phản hồi</span>`;
+    }
+
+    if (commentData.comment_user_id == user_id) {
+        html += `<span class="actions-text actions-delete cl_red" onclick="DeleteComment(this)">Xóa</span>`;
+    }
+
+    html += `</div>
+                    <span class="comment-time">${timeAgo(commentData.createdAt)}</span>
+                </div>`;
+
+    if (Array.isArray(commentData.children) && commentData.children.length > 0) {
+        html += `<ul class="reply-list">`;
+        commentData.children.forEach(child => {
+            html += commentHtmlLoadMore(child, user_id); // Đệ quy
+        });
+        html += `</ul>`;
+    }
+
+    if (commentData.has_more) {
+        html += `<button class="load-more-replies" data-page="2" onclick="loadMoreReplies(${commentData.comment_id}, this)">Xem thêm phản hồi</button>`;
+    }
+
+    html += `</div></li>`;
+
+    return html; // Trả về chuỗi HTML thay vì .append()
+}
+
+// Xem thêm bình luận
+function loadMoreComment(product_id, e) {
+    let page = $(e).attr('data-page') ? parseInt($(e).attr('data-page')) : 1;
+    $.ajax({
+        url: '/api/load-more-comment',
+        method: 'POST',
+        data: { product_id: product_id, page: page },
+        success: function (response) {
+            if (response.status === "success" && response.data.comments.length > 0) {
+                let html = "";
+                let user_id = response.data.user_id;
+                response.data.comments.forEach(element => {
+                    html += commentHtmlLoadMore(element, user_id);
+                });
+
+                $(".comment-list").append(html); // Append một lần duy nhất
+
+                $(e).attr('data-page', Number(page) + 1);
+            }
+            if (response.data.comments.length == 0) {
+                $(e).remove();
+            }
+        }
+    });
+}
+
+// Render HTML bình luận replies
+function commentHtmlLoadMoreReplies(commentData, data_parents_id, user_id) {
+    let isReply = data_parents_id != 0; // Kiểm tra nếu là cấp 2
+    let userAvatar = commentData.use_logo
+        ? `/${getUrlImageAvatar(commentData.use_create_time) + commentData.use_logo}?v=${Date.now() / 1000}`
+        : "/images/home/logoweberror.png";
+
+    let commentContent = commentData.comment_content ?? "(Bình luận trống)"; // Xử lý null
+    let userName = commentData.use_name ?? "Người dùng ẩn danh"; // Xử lý null
+
+    let newComment = `
+        <li class="show-comment" comment-id="${commentData.comment_id}">
+            <img onerror='this.onerror=null;this.src="/images/home/logoweberror.png";' 
+                 src="${userAvatar}" class="lazyload show-comment-avatar" alt="User Avatar">
+            <div class="comment-content">
+                <div class="show-box-comment">
+                    <p class="name-user-comment">${userName}</p>
+                    <p class="name-user-text">${commentContent}</p>
+                </div>
+                <div class="box-comment-actions">
+                    <div class="actions">
+                        ${!isReply ? `<span class="actions-text actions-reply" onclick="replyComment(this)">Phản hồi</span>` : ''}
+                        ${commentData.comment_user_id == user_id ? '<span class="actions-text actions-delete cl_red" onclick="DeleteComment(this)">Xóa</span>' : ''}
+                    </div>
+                    <span class="comment-time">${timeAgo(commentData.createdAt)}</span>
+                </div>
+                ${!isReply ? `<ul class="reply-list"></ul>` : ''}
+            </div>
+        </li>`;
+    if (isReply) {
+        $(`.show-comment[comment-id="${data_parents_id}"]`).find('.reply-list').append(newComment);
+    } else {
+        $(".comment-list").prepend(newComment);
+    }
+
+    $("#comment-input").val("");
+}
+
+// Load thêm bình luận đã replies
+function loadMoreReplies(commentId, buttonElement) {
+    let page = $(buttonElement).attr('data-page') ? parseInt($(buttonElement).attr('data-page')) : 1;
+    $.ajax({
+        url: '/api/load-more-replies',
+        method: 'POST',
+        data: { comment_id: commentId, page: page },
+        success: function (response) {
+            if (response.status === "success" && response.data.comments.length > 0) {
+                let user_id = response.data.user_id;
+                response.data.comments.forEach(element => {
+                    commentHtmlLoadMoreReplies(element, commentId, user_id);
+                });
+                $(buttonElement).attr('data-page', Number(page) + 1);
+            }
+            if (response.data.comments.length == 0) {
+                $(buttonElement).remove();
+            }
+        }
+    });
 }
 
 // Xóa bình luận

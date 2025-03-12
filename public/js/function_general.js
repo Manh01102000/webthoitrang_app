@@ -93,6 +93,26 @@ function format_money(number, decimals = 2, dec_point = '.', thousands_sep = ','
     return parts.join(dec_point);
 }
 
+function escapeHtml(text) {
+    let div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function nl2br(text) {
+    return text.replace(/\n/g, "<br>");
+}
+
+function getUrlImageAvatar(timeStamp) {
+    let dateObj = new Date(timeStamp * 1000); // Chuyển từ timestamp (giây) sang milliseconds
+    let year = dateObj.getFullYear();
+    let month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0 nên +1
+    let day = String(dateObj.getDate()).padStart(2, '0'); // Định dạng 2 chữ số
+
+    let dir = `pictures/${year}/${month}/${day}/`; // Full Path
+    return dir;
+}
+
 function timeAgo(timestamp) {
     const now = Math.floor(Date.now() / 1000); // Lấy thời gian hiện tại dưới dạng timestamp (giây)
     const secondsAgo = now - timestamp;

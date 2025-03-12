@@ -732,6 +732,113 @@ if (!function_exists('getCategoryChildrenCode')) {
     }
 }
 
+// ====================================Luồng bình luận================================================
+// Hàm lấy dữ liệu comment dùng đệ quy
+function buildTreeComment(array $comments, $parentId = 0, $limitReplies = 5)
+{
+    $groupedComments = [];
+
+    // Nhóm các bình luận theo comment_parents_id
+    foreach ($comments as $comment) {
+        $groupedComments[$comment['comment_parents_id']][] = $comment;
+    }
+    dd($groupedComments);
+    return buildTree($groupedComments, $parentId, $limitReplies);
+}
+
+function buildTree(array $groupedComments, $parentId, $limitReplies)
+{
+    $tree = [];
+
+    // Nếu không có bình luận con, trả về mảng rỗng
+    if (!isset($groupedComments[$parentId])) {
+        return [];
+    }
+
+    foreach ($groupedComments[$parentId] as $comment) {
+        // Kiểm tra xem có con hay không
+        $hasChildren = isset($groupedComments[$comment['comment_id']]);
+        $children = $hasChildren ? array_slice($groupedComments[$comment['comment_id']], 0, $limitReplies) : [];
+
+        // Gán danh sách con vào comment hiện tại
+        $comment['children'] = buildTree($groupedComments, $comment['comment_id'], $limitReplies);
+        $comment['has_more_children'] = $hasChildren && count($groupedComments[$comment['comment_id']]) > $limitReplies;
+
+        $tree[] = $comment;
+    }
+
+    return $tree;
+}
+
+if (!function_exists('renderComments')) {
+    function renderComments($comments, $totalComments, $data_id, $data_user_id, $level = 1) // Thêm tham số $level
+    {
+        // ======= Lấy thông tin người dùng từ cookie & giải mã =======
+        $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
+        $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
+        if($UID_ENCRYPT && $UT_ENCRYPT){
+            $key = base64_decode(getenv('KEY_ENCRYPT'));
+            $data_user_id = decryptData($UID_ENCRYPT, $key);
+        }
+        
+        if (empty($comments)) {
+            return '';
+        }
+
+        $html = '<ul class="comment-list">';
+        foreach ($comments as $comment) {
+            $use_logo = !empty($comment['use_logo']) ? geturlimageAvatar($comment['use_create_time']) . $comment['use_logo'] : '/images/home/logoweberror.png';
+            $html .= '<li class="show-comment" comment-id="' . $comment['comment_id'] . '">
+                        <img onerror=\'this.onerror=null;this.src="/images/home/logoweberror.png";\' 
+                            src="/images/home/logoweberror.png" 
+                            data-src="' . $use_logo . '?v=' . time() . '" 
+                            class="lazyload show-comment-avatar" 
+                            alt="User Avatar">
+                        <div class="comment-content">
+                            <div class="show-box-comment">
+                                <p class="name-user-comment">' . htmlspecialchars($comment['use_name']) . '</p>
+                                <p class="name-user-text">' . nl2br(htmlspecialchars($comment['comment_content'])) . '</p>
+                            </div>
+                            <div class="box-comment-actions">
+                                <div class="actions">';
+
+            // Chỉ hiển thị nút "Phản hồi" nếu là cấp 1
+            if ($level == 1) {
+                $html .= '<span class="actions-text actions-reply" onclick="replyComment(this)">Trả lời</span>';
+            }
+
+            if ($data_user_id == $comment['comment_user_id']) {
+                $html .= '<span class="actions-text actions-delete cl_red" onclick="DeleteComment(this)">Xóa</span>';
+            }
+
+            $html .= '</div>
+                    <span class="comment-time">' . timeAgo($comment['createdAt']) . '</span>
+                </div>';
+
+            // Nếu có comment con, hiển thị danh sách con
+            if ($level == 1 && !empty($comment['children'])) {
+                $html .= '<ul class="reply-list">' . renderComments($comment['children'], $level + 1) . '</ul>';
+            }
+
+            // Nếu có bình luận con bị ẩn, hiển thị nút "Xem thêm phản hồi"
+            if (!empty($comment['has_more'])) {
+                $html .= '<button class="load-more-replies" data-page="2" onclick="loadMoreReplies(' . $comment['comment_id'] . ',this)">Xem thêm phản hồi</button>';
+            }
+
+            $html .= '</div></li>';
+        }
+        $html .= '</ul>';
+
+        if ($totalComments > 10) {
+            $html .= '<button class="load-more-comment" data-page="2" onclick="loadMoreComment(' . $data_id . ',this)">Xem thêm bình luận</button>';
+        }
+        return $html;
+    }
+}
+
+
+
+// ====================================END Luồng bình luận================================================
 // Hàm lấy chuỗi cuối cùng
 if (!function_exists('getLastWord')) {
 

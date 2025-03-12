@@ -229,4 +229,213 @@ class CommentController extends Controller
         }
     }
 
+    // Lấy thêm bình luận
+    public function LoadMoreComment(Request $request)
+    {
+        try {
+            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
+            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
+            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
+            $user_id = 0;
+            if ($UID_ENCRYPT && $UT_ENCRYPT) {
+                $key = base64_decode(getenv('KEY_ENCRYPT'));
+                $user_id = decryptData($UID_ENCRYPT, $key);
+            }
+
+            /** === Lấy thông tin bình luận === */
+            $product_id = $request->get('product_id');
+            if (!$product_id) {
+                return apiResponse("error", "Thiếu product_id", [], false, 400);
+            }
+
+            $page = $request->get('page', 1);
+            $limit = 10;
+            $offset = ($page - 1) * $limit;
+
+            $parentComments = comment::leftJoin('comment_replies as cr', 'comments.comment_id', '=', 'cr.comment_id')
+                ->leftJoin('comment_emojis as ce', 'comments.comment_id', '=', 'ce.emoji_comment_id')
+                ->leftJoin('users as us', 'comments.comment_user_id', '=', 'us.use_id')
+                ->select(
+                    // Dữ liệu comment
+                    'comments.comment_id',
+                    'comments.comment_parents_id',
+                    'comments.comment_user_id',
+                    'comments.comment_content_id',
+                    'comments.comment_type',
+                    'comments.comment_content',
+                    'comments.comment_share',
+                    'comments.comment_views',
+                    'comments.comment_image',
+                    'comments.createdAt',
+                    'comments.updatedAt',
+                    // Dữ liệu người dùng
+                    'us.use_name',
+                    'us.use_logo',
+                    'us.use_create_time',
+                    // Dữ liệu admin rep
+                    'cr.reply_id',
+                    'cr.admin_id',
+                    'cr.content as reply_content',
+                    'cr.comment_image as reply_image',
+                    'cr.created_at as reply_createdAt',
+                    'cr.updated_at as reply_updatedAt',
+                    // Dữ liệu emoji
+                    'ce.emoji_id',
+                    'ce.emoji_comment_user',
+                    'ce.emoji_comment_type'
+                )
+                ->where('comments.comment_content_id', $product_id)
+                ->where('comments.comment_parents_id', "=", 0)
+                ->orderBy('comments.createdAt', 'desc')
+                ->limit($limit)
+                ->offset($offset)
+                ->get();
+
+            if (!$parentComments->isEmpty()) {
+                $limitchild = 5;
+
+                $parentIds = $parentComments->pluck('comment_id')->toArray();
+
+                // Lấy danh sách bình luận con
+                $childComments = Comment::leftJoin('comment_replies as cr', 'comments.comment_id', '=', 'cr.comment_id')
+                    ->leftJoin('comment_emojis as ce', 'comments.comment_id', '=', 'ce.emoji_comment_id')
+                    ->leftJoin('users as us', 'comments.comment_user_id', '=', 'us.use_id')
+                    ->select(
+                        'comments.comment_id',
+                        'comments.comment_parents_id',
+                        'comments.comment_user_id',
+                        'comments.comment_content_id',
+                        'comments.comment_type',
+                        'comments.comment_content',
+                        'comments.comment_share',
+                        'comments.comment_views',
+                        'comments.comment_image',
+                        'comments.createdAt',
+                        'comments.updatedAt',
+                        'us.use_name',
+                        'us.use_logo',
+                        'us.use_create_time',
+                        'cr.reply_id',
+                        'cr.admin_id',
+                        'cr.content as reply_content',
+                        'cr.comment_image as reply_image',
+                        'cr.created_at as reply_createdAt',
+                        'cr.updated_at as reply_updatedAt',
+                        'ce.emoji_id',
+                        'ce.emoji_comment_user',
+                        'ce.emoji_comment_type'
+                    )
+                    ->whereIn('comments.comment_parents_id', $parentIds)
+                    ->orderBy('comments.createdAt', 'desc')
+                    ->get()
+                    ->groupBy('comment_parents_id');
+
+                // 🔥 Chuyển danh sách con thành mảng
+                $childComments = $childComments->map(function ($replies) use ($limitchild) {
+                    return [
+                        'data' => $replies->take($limitchild)->toArray(), // Giới hạn 5 bình luận con
+                        'has_more' => $replies->count() > $limitchild // Kiểm tra xem có nhiều hơn 5 bình luận không
+                    ];
+                })->toArray();
+
+                // Chuyển danh sách cha thành mảng
+                $parentComments = $parentComments->toArray();
+
+                // Gắn bình luận con vào bình luận cha
+                $parentComments = array_map(function ($parent) use ($childComments) {
+                    $parentCommentId = $parent['comment_id'];
+
+                    $parent['children'] = $childComments[$parentCommentId]['data'] ?? [];
+                    $parent['has_more'] = $childComments[$parentCommentId]['has_more'] ?? false;
+
+                    return $parent;
+                }, $parentComments);
+            }
+
+            // Dữ liệu trả về
+            return apiResponse("success", "Lấy danh sách bình luận thành công", [
+                'comments' => (!empty($parentComments)) ? $parentComments : [],
+                'user_id' => $user_id,
+            ]);
+        } catch (\Exception $e) {
+            return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
+        }
+    }
+
+    //Load thêm bình luận 
+    public function LoadMoreReplies(Request $request)
+    {
+        try {
+            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
+            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
+            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
+            $user_id = 0;
+            if ($UID_ENCRYPT && $UT_ENCRYPT) {
+                $key = base64_decode(getenv('KEY_ENCRYPT'));
+                $user_id = decryptData($UID_ENCRYPT, $key);
+            }
+            // ======= END Lấy thông tin người dùng từ cookie & giải mã =======
+            $parentCommentId = $request->get('comment_id');
+            $page = $request->get('page', 1);
+            $limit = 5;
+            $offset = ($page - 1) * $limit;
+
+            if (!$parentCommentId) {
+                return apiResponse("error", "Thiếu ID bình luận", [], false, 400);
+            }
+
+            // Lấy danh sách phản hồi con (giữ nguyên JOIN)
+            $childComments = comment::leftJoin('comment_replies as cr', 'comments.comment_id', '=', 'cr.comment_id')
+                ->leftJoin('comment_emojis as ce', 'comments.comment_id', '=', 'ce.emoji_comment_id')
+                ->leftJoin('users as us', 'comments.comment_user_id', '=', 'us.use_id')
+                ->select(
+                    'comments.comment_id',
+                    'comments.comment_parents_id',
+                    'comments.comment_user_id',
+                    'comments.comment_content_id',
+                    'comments.comment_type',
+                    'comments.comment_content',
+                    'comments.comment_share',
+                    'comments.comment_views',
+                    'comments.comment_image',
+                    'comments.createdAt',
+                    'comments.updatedAt',
+                    // Dữ liệu người dùng
+                    'us.use_name',
+                    'us.use_logo',
+                    'us.use_create_time',
+                    // Dữ liệu admin rep
+                    'cr.reply_id',
+                    'cr.admin_id',
+                    'cr.content as reply_content',
+                    'cr.comment_image as reply_image',
+                    'cr.created_at as reply_createdAt',
+                    'cr.updated_at as reply_updatedAt',
+                    // Dữ liệu emoji
+                    'ce.emoji_id',
+                    'ce.emoji_comment_user',
+                    'ce.emoji_comment_type'
+                )
+                ->where('comments.comment_parents_id', $parentCommentId)
+                ->orderBy('comments.createdAt', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+
+            // Kiểm tra xem còn phản hồi nữa không
+            $nextChildExists = comment::where('comment_parents_id', $parentCommentId)
+                ->offset($offset + $limit)
+                ->limit(1)
+                ->exists();
+
+            return apiResponse("success", "Tải thêm phản hồi thành công", [
+                'comments' => $childComments,
+                'has_more' => $nextChildExists,
+                'user_id' => $user_id,
+            ], true, 200);
+
+        } catch (\Exception $e) {
+            return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
+        }
+    }
 }
