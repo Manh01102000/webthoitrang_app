@@ -1,0 +1,316 @@
+.comment-section {
+    width: 100%;
+    max-width: 100%;
+    background: white;
+    margin: auto;
+    border-radius: 15px;
+    box-shadow: 0px 0px 5px #ccc;
+    padding: 20px 0px;
+}
+
+/* Header */
+.comment-section .comment-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+    padding: 0px 20px;
+    margin-bottom: 20px;
+}
+
+.comment-section .comment-heade__statistic {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.comment-section .item_icon {
+    width: 20px;
+    height: 20px;
+}
+
+.comment-section .statistic_icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.comment-section .statistic_userlike {
+    float: left;
+}
+
+.comment-section .statistic_userlike p {
+    float: left;
+}
+
+/* Hàng nút tương tác */
+.comment-section .comment-actions {
+    padding: 20px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    justify-content: space-between;
+}
+
+.comment-section .comment-actions .active-like {
+    color: #1c2d5b;
+    font-weight: 500;
+}
+
+.comment-section .comment-actions .actions-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #1c2d5b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-section .comment-actions :is(.like-box, .btn-comment, .btn-share) {
+    width: calc(100% / 3 - 10px);
+}
+
+.comment-section .comment-actions .btn-comment {
+    justify-content: center;
+}
+
+.comment-section .comment-actions .btn-share {
+    justify-content: end;
+}
+
+.comment-section .comment-actions button:hover {
+    text-decoration: underline;
+}
+
+/* Thích - Hover hiển thị icon */
+.comment-section .like-box {
+    position: relative;
+    display: inline-block;
+    width: calc(100% / 3 - 10px);
+}
+
+.comment-section .like-options {
+    display: none;
+    height: 40px;
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    transition: opacity 0.2s ease-in-out;
+    gap: 10px;
+    align-items: center;
+}
+
+.comment-section .like-options .emoji {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+/* Box chia sẻ */
+.comment-section .share-box {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 10px;
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.comment-section .share-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.comment-section .share-box li {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.comment-section .share-box li:hover {
+    background: #f0f0f0;
+}
+
+/* Ô nhập bình luận */
+.comment-section .comment-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0px 20px;
+}
+
+.comment-section .comment-avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.comment-section .comment-box input {
+    flex: 1;
+    padding: 10px;
+    height: 48px;
+    border: 1px solid #9999;
+    background: #F9F9F9;
+    border-radius: 30px;
+    outline: none;
+}
+
+.box-input-comment {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.box-choose-more {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    right: 15px;
+}
+
+.comment-section .comment-box button {
+    padding: 8px 15px;
+    background: #1c2d5b;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    min-width: 110px;
+    height: 40px;
+}
+
+.comment-section .comment-box button:hover {
+    background: #1c2d5b;
+}
+
+/* Show comment */
+#comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.show-comment {
+    width: 100%;
+    padding: 0px 20px;
+    display: flex;
+    align-items: start;
+    gap: 15px;
+}
+
+.reply-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.reply-list .show-comment {
+    margin-top: 10px;
+}
+
+.show-comment .show-comment-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.show-comment .comment-content {
+    width: calc(100% - 75px);
+}
+
+.show-comment .show-box-comment {
+    width: 100%;
+    background: #F6F6F6;
+    padding: 10px;
+    border-radius: 0px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.show-comment .name-user-comment {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.show-comment .name-user-text {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 400;
+}
+
+.show-comment .box-comment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.show-comment .comment-time {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.show-comment .actions {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+}
+
+.show-comment .actions-text {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    cursor: pointer;
+}
+
+@media screen and (max-width:500px) {
+    .comment-section .comment-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0px 10px;
+    }
+
+    .customer-reviews-mobile,
+    .prod-detail-bottom {
+        padding: 20px 10px;
+    }
+
+    .comment-section .comment-box,
+    .detail-infor-poduct,
+    .detail-desc-poduct {
+        padding: 0px 10px;
+    }
+
+    #add-comment {
+        display: none;
+    }
+}

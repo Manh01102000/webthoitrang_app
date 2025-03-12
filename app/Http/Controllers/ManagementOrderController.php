@@ -10,12 +10,12 @@ class ManagementOrderController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Quản Lý Đơn Hàng - Theo Dõi & Cập Nhật Trạng Thái | Fashion Houses",
@@ -23,19 +23,24 @@ class ManagementOrderController extends Controller
             'seo_keyword' => "quản lý đơn hàng, theo dõi đơn hàng, trạng thái đơn hàng, lịch sử mua sắm, kiểm tra đơn hàng, Fashion Houses",
             'canonical' => $domain . '/quan-ly-tai-khoan',
         ];
-        // LÂY DỮ LIỆU
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Quản lý đơn hàng",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu === */
         $data = InForAccount();
-        // lấy dữ liệu danh mục theo từng cấp
         $categoryTree = getCategoryTree();
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
         ];
-        // dd($dataAll);
-        // Trả về view
+        /** === Trả về view với dữ liệu === */
         return view('management_order', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

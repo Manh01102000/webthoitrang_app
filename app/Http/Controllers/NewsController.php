@@ -8,12 +8,12 @@ class NewsController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Tin Tức Mới Nhất Về Các Nhà Thời Trang Hàng Đầu - Fashion Houses",
@@ -21,20 +21,27 @@ class NewsController extends Controller
             'seo_keyword' => "Fashion Houses, tin tức thời trang, xu hướng thời trang, các nhà thiết kế nổi tiếng, bộ sưu tập thời trang, sự kiện thời trang, thông tin thời trang, thời trang cao cấp, tin tức ngành thời trang.",
             'canonical' => $domain . '/tin-tuc',
         ];
-        // LÂY DỮ LIỆU NGƯỜI DÙNG
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Tin tức",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu cho view === */
         $datablog = blog::all();
-        // LÂY DỮ LIỆU
         $data = InForAccount();
         $categoryTree = getCategoryTree();
+        /** === Tổng hợp toàn bộ dữ liệu === */
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
             'datablog' => $datablog,
         ];
-        // Trả về view
+        /** === Trả về view với dữ liệu === */
         return view('news', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

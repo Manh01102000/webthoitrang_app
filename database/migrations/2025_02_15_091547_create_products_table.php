@@ -19,6 +19,8 @@ class CreateProductsTable extends Migration
             $table->string('product_code')->nullable();
             // Tên sản phẩm
             $table->string('product_name')->nullable();
+            // Alias sản phẩm
+            $table->string('product_alias')->nullable();
             // Mô tả sản phẩm
             $table->string('product_description')->nullable();
             // đơn vị tiền

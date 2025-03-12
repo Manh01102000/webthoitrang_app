@@ -2,11 +2,11 @@ $(document).ready(function () {
     $('.m_slider').each(function () {
         let slider = $(this);
         slider.attr('data-current-slide', 0); // Đặt slide hiện tại là 0
-        startAutoSlide(slider); // Bắt đầu tự động chạy slide
+        startAutoSlideBanner(slider); // Bắt đầu tự động chạy slide
     });
 });
 
-function showSlide(index, slider) {
+function showSlideBanner(index, slider) {
     let slidesContainer = slider.find('.m_slides');
     let totalSlides = slidesContainer.find('img').length;
 
@@ -24,30 +24,30 @@ function showSlide(index, slider) {
 
 function nextSlide(button) {
     let slider = $(button).closest('.m_slider'); // Tìm slider chứa nút bấm
-    changeSlide(slider, 1); // Chuyển sang slide kế tiếp
+    changeSlideBanner(slider, 1); // Chuyển sang slide kế tiếp
 }
 
 function prevSlide(button) {
     let slider = $(button).closest('.m_slider'); // Tìm slider chứa nút bấm
-    changeSlide(slider, -1); // Chuyển sang slide trước
+    changeSlideBanner(slider, -1); // Chuyển sang slide trước
 }
 
-function changeSlide(slider, step) {
+function changeSlideBanner(slider, step) {
     let currentSlide = parseInt(slider.attr('data-current-slide')) || 0; // Lấy index hiện tại
-    showSlide(currentSlide + step, slider); // Hiển thị slide mới
-    resetAutoSlide(slider); // Reset lại auto-slide
+    showSlideBanner(currentSlide + step, slider); // Hiển thị slide mới
+    resetAutoSlideBanner(slider); // Reset lại auto-slide
 }
 
-function startAutoSlide(slider, interval = 3000) {
+function startAutoSlideBanner(slider, interval = 3000) {
     let autoSlideInterval = setInterval(function () {
         let currentSlide = parseInt(slider.attr('data-current-slide')) || 0;
-        showSlide(currentSlide + 1, slider); // Chuyển sang slide tiếp theo
+        showSlideBanner(currentSlide + 1, slider); // Chuyển sang slide tiếp theo
     }, interval);
 
     slider.data('autoSlideInterval', autoSlideInterval); // Lưu ID interval vào data()
 }
 
-function resetAutoSlide(slider) {
+function resetAutoSlideBanner(slider) {
     clearInterval(slider.data('autoSlideInterval')); // Dừng auto-slide hiện tại
-    startAutoSlide(slider); // Khởi động lại auto-slide
+    startAutoSlideBanner(slider); // Khởi động lại auto-slide
 }

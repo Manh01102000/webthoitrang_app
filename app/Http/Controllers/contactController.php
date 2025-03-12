@@ -7,12 +7,12 @@ class ContactController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Liên Hệ Fashion Houses - Kết Nối Với Chúng Tôi",
@@ -20,17 +20,25 @@ class ContactController extends Controller
             'seo_keyword' => "Fashion Houses liên hệ, hỗ trợ khách hàng, tư vấn thời trang, liên hệ nhà thiết kế, hợp tác thời trang, liên hệ Fashion Houses, dịch vụ khách hàng, hỗ trợ thời trang.",
             'canonical' => $domain . '/lien-he',
         ];
-        // LÂY DỮ LIỆU
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Liên hệ",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu === */
         $data = InForAccount();
         $categoryTree = getCategoryTree();
+        /** === Tổng hợp toàn bộ dữ liệu === */
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
         ];
-        // Trả về view 'example'
+        /** === Trả về view với dữ liệu === */
         return view('contact', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

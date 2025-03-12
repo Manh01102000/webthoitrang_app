@@ -28,39 +28,56 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProductFavoriteController;
 // quản lý đơn hàng
 use App\Http\Controllers\ManagementOrderController;
+// Chi tiết sản phẩm
+use App\Http\Controllers\ProductDetailController;
+// Chi tiết tin tức
+use App\Http\Controllers\NewsDetailController;
+// page 404
+use App\Http\Controllers\ErrorController;
 // ==================Route===============================
-// Trang chủ
+// 🚀 TRANG CHỦ & THÔNG TIN CHUNG
 Route::get('/', [HomeController::class, 'Home']);
-// Đăng ký
-Route::get('/dang-ky-tai-khoan', [RegisterController::class, 'index']);
-// Đăng nhập
-Route::get('/dang-nhap-tai-khoan', [LoginController::class, 'index']);
-// Đăng xuất
-Route::get('/dang-xuat', [LogoutController::class, 'index']);
-// Trang chủ tin tức
-Route::get('/tin-tuc', [NewsController::class, 'index']);
-// Liên hệ
 Route::get('/lien-he', [ContactController::class, 'index']);
-// Giỏ hàng
-Route::get('/gio-hang', [CartController::class, 'index']);
-// Giỏ hàng
-Route::get('/xac-nhan-don-hang', [ConfirmOrderController::class, 'index']);
-// Quản lý tài khoản
-Route::get('/quan-ly-tai-khoan', [managerAccountController::class, 'index']);
-// Đổi mật khẩu
+Route::get('/tin-tuc', [NewsController::class, 'index']);
+
+// 🚀 XÁC THỰC & TÀI KHOẢN
+Route::get('/dang-ky-tai-khoan', [RegisterController::class, 'index']);
+Route::get('/dang-nhap-tai-khoan', [LoginController::class, 'index']);
+Route::get('/dang-xuat', [LogoutController::class, 'index']);
+Route::get('/quan-ly-tai-khoan', [ManagerAccountController::class, 'index']);
 Route::get('/doi-mat-khau', [ChangePasswordController::class, 'index']);
-// sản phẩm yêu thích
-Route::get('/san-pham-yeu-thich', [ProductFavoriteController::class, 'index']);
-// quản lý đơn hàng
+
+// 🚀 GIỎ HÀNG & THANH TOÁN
+Route::get('/gio-hang', [CartController::class, 'index']);
+Route::get('/xac-nhan-don-hang', [ConfirmOrderController::class, 'index']);
 Route::get('/quan-ly-don-hang', [ManagementOrderController::class, 'index']);
-// test 
-Route::get("/test", function () {
-    return view('test');
+
+// 🚀 SẢN PHẨM (cần kiểm tra xem có sản phẩm không nếu k trả về 404)
+Route::get('/san-pham-yeu-thich', [ProductFavoriteController::class, 'index']);
+Route::middleware('notfound')->group(function () {
+    Route::get('/san-pham/{id}', [ProductDetailController::class, 'index'])->where('id', '[0-9]+');
+    Route::get('/san-pham/{slug}-{id}', [ProductDetailController::class, 'index'])
+        ->where(['id' => '[0-9]+', 'slug' => '[a-zA-Z0-9-]+']);
 });
 
-// Tạo site map
+// 🚀 BÀI VIẾT / TIN TỨC
+Route::middleware('notfound')->group(function () {
+    Route::get('/bai-viet/{id}', [NewsDetailController::class, 'index'])->where('id', '[0-9]+');
+    Route::get('/bai-viet/{slug}-{id}', [NewsDetailController::class, 'index'])
+        ->where(['id' => '[0-9]+', 'slug' => '[a-zA-Z0-9-]+']);
+});
+
+// 🚀 LỖI & HỆ THỐNG
+Route::get('/404', [ErrorController::class, 'notFound']);
+
+// 🚀 SITEMAP
 Route::get('/sitemap.xml', function () {
     $sitemap = Sitemap::create()
         ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency('daily'));
     return $sitemap->writeToFile(public_path('sitemap.xml'));
+});
+
+// 🚀 ROUTE TEST
+Route::get('/test', function () {
+    return view('test');
 });

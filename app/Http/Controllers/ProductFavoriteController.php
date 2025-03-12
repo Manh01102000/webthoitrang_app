@@ -10,12 +10,12 @@ class ProductFavoriteController extends Controller
 {
     public function index()
     {
-        // kiểm tra xem có dùng thư viện hay không
+        /** === Khai báo thư viện sử dụng === */
         $dataversion = [
             'useslick' => 0,
             'useselect2' => 1,
         ];
-        // SEO 
+        /** === Xây dựng SEO === */
         $domain = env('DOMAIN_WEB');
         $dataSeo = [
             'seo_title' => "Sản Phẩm Yêu Thích - Xu Hướng Thời Trang Hot Nhất | Fashion Houses",
@@ -23,19 +23,25 @@ class ProductFavoriteController extends Controller
             'seo_keyword' => "sản phẩm yêu thích, thời trang hot, xu hướng thời trang, mua sắm online, quần áo đẹp, phong cách thời thượng, Fashion Houses",
             'canonical' => $domain . '/san-pham-yeu-thich',
         ];
-        // LÂY DỮ LIỆU
+        /** === Xây dựng breadcrumb === */
+        $breadcrumbItems = [
+            ['title' => 'Trang chủ', 'url' => '/', 'class' => 'otherssite'],
+            [
+                'title' => "Sản phẩm yêu thích",
+                'url' => '',
+                'class' => 'thissite'
+            ]
+        ];
+        /** === Chuẩn bị dữ liệu cho view === */
         $data = InForAccount();
-        // lấy dữ liệu danh mục theo từng cấp
+        /** === lấy dữ liệu danh mục theo từng cấp === */
         $categoryTree = getCategoryTree();
         $dataAll = [
             'data' => $data,
+            'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
-            'datacity' => '',
-            'datadistrict' => '',
-            'datacommune' => '',
         ];
-        // dd($dataAll);
-        // Trả về view
+        /** === Trả về view với dữ liệu === */
         return view('product_favorite', [
             'dataSeo' => $dataSeo,
             'domain' => $domain,

@@ -13,7 +13,7 @@ use App\Models\manage_discount; // Import model manage_discount
 // =======Sử dụng Repository trong Controller=====
 // Inject Repository vào Controller thay vì viết trực tiếp logic.
 use App\Repositories\product\ProductRepositoryInterface;
-use App\Repositories\User\UserRepositoryInterface;
+// use App\Repositories\User\UserRepositoryInterface;
 
 class APIController extends Controller
 {
@@ -21,10 +21,10 @@ class APIController extends Controller
 
     public function __construct(
         ProductRepositoryInterface $productRepo,
-        UserRepositoryInterface $userRepo
+        // UserRepositoryInterface $userRepo
     ) {
         $this->productRepo = $productRepo;
-        $this->userRepo = $userRepo;
+        // $this->userRepo = $userRepo;
     }
     // =============================================ADMIN===============================================================================
     public function Adminlogin(Request $request)

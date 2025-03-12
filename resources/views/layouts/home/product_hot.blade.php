@@ -94,11 +94,13 @@
                             <div class="hct_item_infor_detail">
                                 <div class="infor_detail_top">
                                     <div class="infor_detail_top_title">
-                                        <img class="infor_detail_img lazyload" 
-                                        onerror="this.onerror=null; this.src='{{ asset('images/icon/load.gif') }}';"
-                                        src="{{ asset('images/product_sample/anh1.jpg') }}"
-                                        data-src="{{ asset($url_avarta) }}?v={{ time() }}" alt="anh">
-                                        <p class="infor_detail_name font_s16 line_h20 font_w500">{{ $topProducts['product_name'] }}</p>
+                                        <a href="{{ rewriteProduct($topProducts['product_id'],$topProducts['product_alias'],$topProducts['product_name']) }}" rel="nofollow">
+                                            <img class="infor_detail_img lazyload" 
+                                            onerror="this.onerror=null; this.src='{{ asset('images/icon/load.gif') }}';"
+                                            src="{{ asset('images/product_sample/anh1.jpg') }}"
+                                            data-src="{{ asset($url_avarta) }}?v={{ time() }}" alt="anh">
+                                        </a>
+                                        <a href="{{ rewriteProduct($topProducts['product_id'],$topProducts['product_alias'],$topProducts['product_name']) }}" rel="nofollow" class="infor_detail_name font_s16 line_h20 font_w500">{{ $topProducts['product_name'] }}</a>
                                     </div>
                                     <div class="infor_detail_top_des">
                                         <p class="infor_detail_productcode">Mã sản phẩm: <span class="span_prdcode">{{ $topProducts['product_code'] }}</span></p>

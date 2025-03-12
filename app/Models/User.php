@@ -9,8 +9,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
@@ -46,4 +47,14 @@ class User extends Authenticatable
         'use_long',
     ]; // Các cột có thể gán dữ liệu hàng loạt
 
+    // 🔹 Bổ sung 2 phương thức để sử dụng JWT
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); // Trả về ID của user
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return []; // Có thể thêm claims tùy chỉnh nếu cần
+    }
 }
