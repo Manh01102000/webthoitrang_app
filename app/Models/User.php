@@ -47,12 +47,13 @@ class User extends Authenticatable implements JWTSubject
         'use_long',
     ]; // Các cột có thể gán dữ liệu hàng loạt
 
+    // Ẩn các trường nhạy cảm (không cho vào JWT)
+    protected $hidden = ['use_pass', 'use_otp', 'use_ip_address'];
     // 🔹 Bổ sung 2 phương thức để sử dụng JWT
     public function getJWTIdentifier()
     {
-        return $this->getKey(); // Trả về ID của user
+        return $this->getKey(); // Sử dụng ID user làm JWT identifier
     }
-
     public function getJWTCustomClaims()
     {
         return []; // Có thể thêm claims tùy chỉnh nếu cần

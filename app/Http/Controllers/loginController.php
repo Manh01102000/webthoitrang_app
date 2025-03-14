@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 // Model
 use App\Models\User;
@@ -77,13 +79,19 @@ class LoginController extends Controller
                     $UT_ENCRYPT = encryptData($cookie_ut, $key);
                     $UID_ENCRYPT = encryptData($cookie_last_id, $key);
                     $PHPSESPASS_ENCRYPT = encryptData($cookie_password, $key);
+                    // Set cookie (tồn tại 1 ngày)
+                    $expire_time = time() + (1 * 24 * 60 * 60);
                     // Lưu vào cookie
-                    setcookie('UT', $UT_ENCRYPT, time() + 7 * 6000, '/');
-                    setcookie('UID', $UID_ENCRYPT, time() + 7 * 6000, '/');
-                    setcookie('PHPSESPASS', $PHPSESPASS_ENCRYPT, time() + 7 * 6000, '/');
+                    setcookie('UT', $UT_ENCRYPT, $expire_time, '/');
+                    setcookie('UID', $UID_ENCRYPT, $expire_time, '/');
+                    setcookie('PHPSESPASS', $PHPSESPASS_ENCRYPT, $expire_time, '/');
+
                     try {
                         // Tạo JWT token
                         $token = JWTAuth::fromUser($user);
+                        // Sau khi lên serve thì mở bảo mật XSS không lấy được token từ js
+                        // setcookie('jwt_token', $token, $expire_time, '/', '', true, true);
+                        setcookie('jwt_token', $token, $expire_time, '/', '', false, true);
                         // Trả về dữ liệu thành công
                         $data_mess = [
                             'data' => $user,  // Trả về đối tượng user đầu tiên
@@ -116,6 +124,21 @@ class LoginController extends Controller
             return response()->json($payload);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
+        }
+    }
+
+    public function refreshToken()
+    {
+        try {
+            $newToken = JWTAuth::parseToken()->refresh();
+            // Set jwt_token (tồn tại 10 ngày) khi có refreshToken
+            $expire_time = time() + (10 * 24 * 60 * 60);
+            return response()->json(['message' => 'Token làm mới thành công!'])
+                // Sau khi lên serve thì mở để bảo mật XSS 
+                // ->cookie('jwt_token', $newToken, $expire_time, "/", "", true, true);
+                ->cookie('jwt_token', $newToken, $expire_time, "/", "", false, true);
+        } catch (TokenExpiredException $e) {
+            return response()->json(['message' => 'Refresh token hết hạn, yêu cầu đăng nhập lại!'], 401);
         }
     }
 }

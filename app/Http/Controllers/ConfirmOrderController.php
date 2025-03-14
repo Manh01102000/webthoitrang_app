@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+// MODEL
 use App\Models\city;
 use App\Models\distric;
 use App\Models\commune;
@@ -14,7 +15,10 @@ use App\Models\order_confirm;
 use App\Models\address_order;
 use App\Models\orders;
 use App\Models\order_details;
-
+//JWT
+use Tymon\JWTAuth\Facades\JWTAuth;
+// COOKIE
+use Illuminate\Support\Facades\Cookie;
 
 class ConfirmOrderController extends Controller
 {
@@ -79,7 +83,9 @@ class ConfirmOrderController extends Controller
             ->leftJoin('manage_discounts', 'products.product_code', '=', 'manage_discounts.discount_product_code')
             ->where('order_confirms.conf_user_id', $user_id)
             ->select([
+                'products.product_id',
                 'products.product_name',
+                'products.product_alias',
                 'products.product_code',
                 'products.product_create_time',
                 'products.product_brand',
@@ -241,6 +247,7 @@ class ConfirmOrderController extends Controller
     {
         try {
             // Tạo validator
+            $arr_cart_id = $request->get('arr_cart_id', []);
             $validator = Validator::make($request->all(), [
                 "order_code" => 'required',
                 "address_orders_user_name" => 'required',
@@ -248,7 +255,6 @@ class ConfirmOrderController extends Controller
                 "address_orders_user_phone" => 'required',
                 "address_orders_user_email" => 'required',
                 "arr_confirm_id" => 'required',
-                "arr_cart_id" => 'required',
                 "arr_product_code" => 'required',
                 "arr_product_amount" => 'required',
                 "arr_product_classification" => 'required',
@@ -315,7 +321,7 @@ class ConfirmOrderController extends Controller
             // ✅ Đảm bảo tính toàn vẹn dữ liệu
             // ✅ Nếu có lỗi xảy ra, tất cả thay đổi sẽ bị rollback (hủy bỏ), không bị mất dữ liệu
             // ✅ Tránh trường hợp giỏ hàng bị xóa trước khi đơn hàng được tạo thành công
-            DB::transaction(function () use ($validator, $user_id, $array_insert) {
+            DB::transaction(function () use ($validator, $user_id, $arr_cart_id, $array_insert) {
                 // Lưu dữ liệu bảng đơn hàng
                 orders::create([
                     'order_code' => $validator->validated()['order_code'],
@@ -337,7 +343,7 @@ class ConfirmOrderController extends Controller
                 // Lưu dữ liệu bảng chi tiết đơn hàng
                 order_details::insert($array_insert);
                 // Xóa giỏ hàng
-                if (!empty($validator->validated()['arr_cart_id'])) {
+                if (!empty($arr_cart_id)) {
                     $arr_cart_id = explode(',', $validator->validated()['arr_cart_id']);
                     cart::whereIn('cart_id', $arr_cart_id)->delete();
                 }

@@ -17,6 +17,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ConfirmOrderController;
 // comment
 use App\Http\Controllers\CommentController;
+// Chi tiết sản phẩm
+use App\Http\Controllers\ProductDetailController;
 // ========================AJAX================================
 // API kiểm tra tài khoản tồn tại
 Route::post('/check_account_register', [RegisterController::class, 'CheckAccountRegister']);
@@ -26,10 +28,6 @@ Route::post('/AccountRegister', [RegisterController::class, 'AccountRegister']);
 Route::post('/Accountlogin', [LoginController::class, 'Accountlogin']);
 // Đăng nhập tài khoản
 Route::post('/Accountlogin', [LoginController::class, 'Accountlogin']);
-// API Kiểm tra mật khẩu cũ
-Route::post('/check_password_old', [ChangePasswordController::class, 'check_password_old']);
-// API Kiểm tra mật mới có trùng mật khẩu cũ hay không
-Route::post('/check_password_new', [ChangePasswordController::class, 'check_password_new']);
 // Xóa cache
 Route::post('/clearCache', [ApiController::class, 'clearCache']);
 // Lấy tỉnh thành
@@ -44,22 +42,33 @@ Route::post('/getDistrictsByID', [ApiController::class, 'getDistrictsByID']);
 Route::post('/getCommunesByID', [ApiController::class, 'getCommunesByID']);
 // lấy danh mục sản phẩm id cha
 Route::post('/getCategoryByID', [ApiController::class, 'getCategoryByID']);
+// =====================Đánh giá sao sản phẩm==============================
+Route::post('/RatingProduct', [ProductDetailController::class, 'RatingProduct']);
 // =====================Giỏ hàng==============================
 Route::post('/AddToCart', [CartController::class, 'AddToCart']);
 Route::post('/updateCartCountBuy', [CartController::class, 'updateCartCountBuy']);
 Route::post('/ConfirmOrder', [CartController::class, 'ConfirmOrder']);
+Route::post('/ConfirmOrderBuyNow', [CartController::class, 'ConfirmOrderBuyNow']);
 // =====================Xác nhận đơn hàng======================================
 Route::post('/AddDataInforship', [ConfirmOrderController::class, 'AddDataInforship']);
 Route::post('/SetShipDefalt', [ConfirmOrderController::class, 'SetShipDefalt']);
 Route::post('/PayMent', [ConfirmOrderController::class, 'PayMent']);
 // =================API Cập nhật tài khoản==============================
-// Cập nhật tài khoản
-Route::post('/AccountUpdate', [managerAccountController::class, 'AccountUpdate']);
-// Đổi Mật khẩu
-Route::post('/ChangePassword', [ChangePasswordController::class, 'ChangePassword']);
+// Middleware kiểm tra đăng nhập và kiểm tra token hợp lệ
+Route::group(['middleware' => ['auth.jwt']], function () {
+    // Cập nhật tài khoản
+    Route::post('/AccountUpdate', [managerAccountController::class, 'AccountUpdate']);
+    // Đổi Mật khẩu
+    Route::post('/ChangePassword', [ChangePasswordController::class, 'ChangePassword']);
+    // API Kiểm tra mật khẩu cũ
+    Route::post('/check_password_old', [ChangePasswordController::class, 'check_password_old']);
+    // API Kiểm tra mật mới có trùng mật khẩu cũ hay không
+    Route::post('/check_password_new', [ChangePasswordController::class, 'check_password_new']);
+});
 // =================API luồng bình luận==============================
 Route::post('/SubmitEmoji', [CommentController::class, 'SubmitEmoji']);
 Route::post('/AddComment', [CommentController::class, 'AddComment']);
+Route::post('/DeleteComment', [CommentController::class, 'DeleteComment']);
 Route::post('/load-more-comment', [CommentController::class, 'LoadMoreComment']);
 Route::post('/load-more-replies', [CommentController::class, 'LoadMoreReplies']);
 // API debug token

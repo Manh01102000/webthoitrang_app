@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use App\Models\User;
+// JWT
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class managerAccountController extends Controller
 {
@@ -57,31 +60,32 @@ class managerAccountController extends Controller
             'data' => '',
             'message' => "Thiếu dữ liệu truyền lên",
         ];
-        // Lấy UID từ cookie
-        $UID_ENCRYPT = !empty($_COOKIE['UID']) ? $_COOKIE['UID'] : 0;
-        //key mã hóa (dùng cho giải mã và mã hóa)
-        $key = base64_decode(getenv('KEY_ENCRYPT')); // Sinh key 32 byte rồi mã hóa Base64
-        $use_id = decryptData($UID_ENCRYPT, $key);
-        $avatar = $request->file('avatar');
-        $emp_email_contact = $request->get('emp_email_contact');
-        $emp_name = $request->get('emp_name');
-        $emp_address = $request->get('emp_address');
-        $emp_phone = $request->get('emp_phone');
-        $emp_birth = $request->get('emp_birth');
-        $ip_address = client_ip();
 
-        if (
-            isset($use_id) && $use_id != "" &&
-            isset($emp_email_contact) && $emp_email_contact != "" &&
-            isset($emp_name) && $emp_name != "" &&
-            isset($emp_address) && $emp_address != "" &&
-            isset($emp_phone) && $emp_phone != "" &&
-            isset($emp_birth) && $emp_birth != ""
-        ) {
-            $select = User::where('use_id', $use_id)->first();
+        try {
+            // 🟢 Lấy user từ request
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
 
-            if (!empty($select)) {
-                $select = $select->toArray();
+            // 🟢 Nhận dữ liệu từ request
+            $avatar = $request->file('avatar');
+            $emp_email_contact = $request->get('emp_email_contact');
+            $emp_name = $request->get('emp_name');
+            $emp_address = $request->get('emp_address');
+            $emp_phone = $request->get('emp_phone');
+            $emp_birth = $request->get('emp_birth');
+            $ip_address = client_ip();
+
+            if (
+                isset($emp_email_contact) && $emp_email_contact != "" &&
+                isset($emp_name) && $emp_name != "" &&
+                isset($emp_address) && $emp_address != "" &&
+                isset($emp_phone) && $emp_phone != "" &&
+                isset($emp_birth) && $emp_birth != ""
+            ) {
+                $use_id = $user->use_id;
+                $select = User::where('use_id', $use_id)->first();
                 // Cập nhật ảnh đại diện
                 $use_logo = '';
                 if (!empty($avatar)) {
@@ -93,7 +97,7 @@ class managerAccountController extends Controller
                     $use_logo = UploadAvatar($tempPath, $select['use_name'], $select['use_create_time'], $extension);
                 }
                 // Cập nhật thông tin tài khoản
-                $post = User::where('use_id', $use_id)->update([
+                User::where('use_id', $use_id)->update([
                     'use_name' => $emp_name,
                     'use_email_contact' => $emp_email_contact,
                     'use_phone' => $emp_phone,
@@ -104,23 +108,18 @@ class managerAccountController extends Controller
                     'last_login' => time(),
                     'use_ip_address' => $ip_address,
                 ]);
-                // 
-                $data_mess = [
+
+                return response()->json([
                     'result' => true,
-                    'data' => $post,
+                    'data' => $user,
                     'message' => "Cập nhật thông tin thành công",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
-            } else {
-                $data_mess = [
-                    'result' => false,
-                    'data' => '',
-                    'message' => "Không tìm thấy người dùng",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
+                ], 200);
             }
 
+            return response()->json($data_mess, 400);
+
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Lỗi xác thực token!'], 401);
         }
-        return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
     }
 }

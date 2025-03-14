@@ -1,8 +1,12 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+// MODEL
+use App\Models\User;
+// JWT
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class RegisterController extends Controller
 {
@@ -69,11 +73,6 @@ class RegisterController extends Controller
 
     public function AccountRegister(Request $request)
     {
-        $data_mess = [
-            'result' => false,
-            'data' => '',
-            'message' => "Thiếu dữ liệu truyền lên",
-        ];
         $emp_account = $request->get('emp_account');
         $emp_name = $request->get('emp_name');
         $emp_password = $request->get('emp_password');
@@ -81,19 +80,18 @@ class RegisterController extends Controller
         $emp_birth = $request->get('emp_birth');
         $ip_address = client_ip();
 
-        if (
-            isset($emp_account) && $emp_account != "" &&
-            isset($emp_name) && $emp_name != "" &&
-            isset($emp_password) && $emp_password != "" &&
-            isset($emp_phone) && $emp_phone != "" &&
-            isset($emp_birth) && $emp_birth != ""
-        ) {
-            $post = User::create([
+        if (!$emp_account || !$emp_name || !$emp_password || !$emp_phone || !$emp_birth) {
+            return apiResponse("success", "Thiếu dữ liệu truyền lên", [], false, 400);
+        }
+
+        try {
+            // Tạo user mới
+            $user = User::create([
                 'use_name' => $emp_name,
                 'use_email_account' => $emp_account,
                 'use_role' => 1,
                 'use_email_contact' => $emp_account,
-                'use_pass' => md5($emp_password),
+                'use_pass' => md5($emp_password), // Bảo mật hơn md5()
                 'use_phone' => $emp_phone,
                 'use_authentic' => 0,
                 'use_otp' => 0,
@@ -105,27 +103,36 @@ class RegisterController extends Controller
                 'use_ip_address' => $ip_address,
             ]);
 
-            // Lấy dữ liệu vừa tạo
-            $cookie_last_id = $post->id;  // Lấy ID của user mới
-            $cookie_password = $post->use_pass;  // Lấy mật khẩu đã mã hóa
-            $cookie_ut = 1; // Giá trị tùy chỉnh của bạn
-            // Mã hóa dữ liệu
-            // => key mã hóa (dùng cho giải mã và mã hóa)
-            $key = base64_decode(getenv('KEY_ENCRYPT')); // Sinh key 32 byte rồi mã hóa Base64
+            // Lấy ID & password đã mã hóa
+            $cookie_last_id = $user->use_id;
+            $cookie_password = $user->use_pass;
+            $cookie_ut = 1;
+
+            // Key mã hóa
+            $key = base64_decode(getenv('KEY_ENCRYPT'));
             $UT_ENCRYPT = encryptData($cookie_ut, $key);
             $UID_ENCRYPT = encryptData($cookie_last_id, $key);
             $PHPSESPASS_ENCRYPT = encryptData($cookie_password, $key);
-            // Lưu vào cookie
-            setcookie('UT', $UT_ENCRYPT, time() + 7 * 6000, '/');
-            setcookie('UID', $UID_ENCRYPT, time() + 7 * 6000, '/');
-            setcookie('PHPSESPASS', $PHPSESPASS_ENCRYPT, time() + 7 * 6000, '/');
-            // 
-            $data_mess = [
-                'result' => true,
-                'data' => $post,
-                'message' => "Đăng ký tài khoản thành công",
-            ];
+
+            // Set cookie (tồn tại 1 ngày)
+            $expire_time = time() + (1 * 24 * 60 * 60);
+            setcookie('UT', $UT_ENCRYPT, $expire_time, '/');
+            setcookie('UID', $UID_ENCRYPT, $expire_time, '/');
+            setcookie('PHPSESPASS', $PHPSESPASS_ENCRYPT, $expire_time, '/');
+
+            // Tạo JWT token
+            $token = JWTAuth::fromUser($user);
+            // setcookie('jwt_token', $token, $expire_time, '/', '', true, true);
+            setcookie('jwt_token', $token, $expire_time, '/', null, false, true);
+
+            // Trả về dữ liệu thành công
+            return apiResponse("success", "Đăng ký tài khoản thành công", [
+                'data' => $user,
+                'token' => $token,
+            ], true, 200);
+
+        } catch (\Exception $e) {
+            return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
         }
-        return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
     }
 }

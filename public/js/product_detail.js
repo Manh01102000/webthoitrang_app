@@ -141,10 +141,12 @@ function UpdateStockAndPrice($item, data_size, data_color) {
 
         // Cập nhật UI
         $item.find(".prod-card_price_original").text(formattedPrice + " đ");
+        $item.find(".prod-card_price_original").attr("data-price_original", newPrice)
         $item.find(".product-card_stock").text(newStock + ' sản phẩm sẵn có');
 
         if (checkDiscount !== 0) {
             $item.find(".prod-card_price_discount").text(formattedDiscountPrice + " đ");
+            $item.find(".prod-card_price_discount").attr("data-price_discount", newDiscountPrice)
         }
     } else {
         console.warn("Không tìm thấy sản phẩm với màu và kích cỡ đã chọn.");
@@ -154,4 +156,157 @@ function UpdateStockAndPrice($item, data_size, data_color) {
 function formatCurrency(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
-// 
+// Sự kiện nhập số lượng sản phẩm mua
+$('.product-card_count').keyup(function () {
+    var stock = $(this).parents(".prod-card_amount_buy").attr('data-stock');
+    var count_cart = $(this).val();
+    if ((Number(count_cart) > Number(stock))) {
+        alert("Số lượng đặt hàng tối đa: " + stock + " sản phẩm");
+        $(this).val(stock);
+        return;
+    }
+});
+// Sự kiện tăng số lượng sản phẩm mua
+function PlusCountProduct(e) {
+    var stock = $(e).parents(".prod-card_amount_buy").attr('data-stock');
+    var count_cart = Number($(e).parents(".prod-card_amount_buy").find('.product-card_count').val());
+    var increase_count = ++count_cart;
+    $(e).parents(".prod-card_amount_buy").find('.product-card_count').val(increase_count);
+    if (stock != "" && increase_count > stock) {
+        $(e).parents(".prod-card_amount_buy").find('.product-card_count').val(stock);
+    }
+}
+// Sự kiện Giảm số lượng sản phẩm mua
+function MinusCountProduct(e) {
+    var stock = $(e).parents(".prod-card_amount_buy").attr('data-stock');
+    var count_cart = Number($(e).parents(".prod-card_amount_buy").find('.product-card_count').val());
+    var reduce_count = --count_cart;
+    $(e).parents(".prod-card_amount_buy").find('.product-card_count').val(reduce_count);
+    if (stock != "" && reduce_count <= 0) {
+        $(e).parents(".prod-card_amount_buy").find('.product-card_count').val(1);
+    }
+}
+// Chức năng thêm giỏ hàng
+function addCart(e) {
+    let data_user = $(e).parents('.prod-detail-top').attr("data-user");
+    if (!data_user) {
+        return alert("Bạn cần đăng nhập để thực hiện chức năng này");
+    }
+    let product_amount = $(e).parents('.prod-detail-top').find(".product-card_count").val().trim();
+    let product_code = $(e).parents('.prod-detail-top').attr("data-product-code");
+    let product_size = $(e).parents('.prod-detail-top').find(".change-option_size.active_o").attr("data-size");
+    let product_color = $(e).parents('.prod-detail-top').find(".change-option_color.active_o").attr("data-color");
+    if (!product_amount) {
+        $(e).parents('.prod-detail-top').find(".product-card_count").focus();
+        return alert("Vui lòng nhập số lượng sản phẩm");
+    }
+    if (!product_code) {
+        return alert("Có lỗi xảy ra");
+    }
+    $.ajax({
+        type: "POST",
+        url: "/api/AddToCart",
+        data: {
+            product_amount,
+            product_code,
+            product_size,
+            product_color,
+        },
+        dataType: "JSON",
+        success: function (data) {
+            console.log(data);
+            if (!data.result) {
+                return alert("Thêm giỏ hàng thất bại");
+            }
+            alert(data.message);
+        }
+    });
+}
+// Chức năng mua ngay
+function BuyNow(e) {
+    let data_user = $(e).parents('.prod-detail-top').attr("data-user");
+    if (!data_user) {
+        return alert("Bạn cần đăng nhập để thực hiện chức năng này");
+    }
+    // Lấy phí ship
+    var feeship = Number($(e).parents('.prod-detail-top').find('.prod-card_shipping .fee_ship').attr('data-feeship'));
+    // Lấy mã sản phẩm
+    var product_code = $(e).parents('.prod-detail-top').attr('data-product-code');
+    // Lấy giá tiền
+    var checkdiscount = $(e).parents('.prod-detail-top').attr('data-check-discount');
+    let unitprice = 0;
+    if (checkdiscount == 0) {
+        unitprice = Number($(e).parents('.prod-detail-top').find('.prod-card_price_original').attr('data-price_original'));
+    } else {
+        unitprice = Number($(e).parents('.prod-detail-top').find('.prod-card_price_discount').attr("data-price_discount"));
+    }
+    // Lấy classification
+    let product_size = $(e).parents('.prod-detail-top').find(".change-option_size.active_o").attr("data-size");
+    let product_color = $(e).parents('.prod-detail-top').find(".change-option_color.active_o").attr("data-color");
+    var product_classification = product_size + ',' + product_color;
+    product_classification = product_classification.trim();
+    // Lấy số lượng sản phẩm
+    var product_amount = Number($(e).parents(".prod-detail-top").find('.prod-card_amount_buy .product-card_count').val()) || 1;
+    // Lấy tổng giá tiền
+    var total_price = (product_amount * unitprice) || 0;
+
+    console.log('product_code', product_code);
+    console.log('product_amount', product_amount);
+    console.log('product_classification', product_classification);
+    console.log('total_price', total_price);
+    console.log('unitprice', unitprice);
+    console.log('feeship', feeship);
+
+    var formdata = new FormData();
+    formdata.append('product_code', product_code);
+    formdata.append('product_amount', product_amount);
+    formdata.append('product_classification', product_classification);
+    formdata.append('total_price', total_price);
+    formdata.append('unitprice', unitprice);
+    formdata.append('feeship', feeship);
+    $.ajax({
+        url: '/api/ConfirmOrderBuyNow',
+        type: 'POST',
+        data: formdata,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            if (data.result) {
+                alert(data.message);
+                location.href = "/xac-nhan-don-hang";
+            }
+        }
+    });
+
+}
+// Đánh giá sản phẩm
+function RatingProduct(e) {
+    let data_user = $(e).attr("data-user");
+    if (!data_user) {
+        return alert("Bạn cần đăng nhập để thực hiện chức năng này!");
+    }
+    var rating = $(e).parents('.review-form').find("#rating").val();
+    if (!rating) {
+        return alert("Bạn chưa chọn số sao đánh giá!");
+    }
+    var product_id = $(e).attr("data-proid");
+    if(!product_id){
+        return alert("Có lỗi xảy ra vui lòng tải lại trang!");
+    }
+    $.ajax({
+        type: "POST",
+        url: "/api/RatingProduct",
+        data: {
+            rating,
+            product_id,
+        },
+        dataType: "JSON",
+        success: function (data) {
+            if (!data.result) {
+                return alert("Đánh giá thất bại");
+            }
+            alert(data.message);
+            location.reload();
+        }
+    });
+}

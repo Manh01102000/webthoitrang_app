@@ -199,6 +199,13 @@
     font-weight: 500;
 }
 
+.product-card_count {
+    width: 100%;
+    max-width: 30px;
+    text-align: center;
+    outline: none;
+}
+
 .prod-card_button {
     flex-wrap: wrap;
 }
@@ -232,6 +239,7 @@
     transition: all 0.8s ease;
     color: #1c2d5b;
 }
+
 /* --------------------------- */
 .card_button_addcart {
     background: #1c2d5b;
@@ -591,10 +599,17 @@
 }
 
 .product-price-original {
-    font-size: 13px;
-    line-height: 15px;
+    color: #e60101;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+.active_price {
     text-decoration: line-through;
     color: #333;
+    font-size: 13px;
+    line-height: 15px;
 }
 
 .product-price-discount {

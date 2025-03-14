@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-
+// MODEL
 use App\Models\comment;
 use App\Models\comment_emoji;
 use App\Models\comment_replie;
 use App\Models\content_emojis;
 use App\Models\User;
+//JWT
+use Tymon\JWTAuth\Facades\JWTAuth;
+// COOKIE
+use Illuminate\Support\Facades\Cookie;
 
 class CommentController extends Controller
 {
@@ -223,6 +227,59 @@ class CommentController extends Controller
                 'user' => $dataUser,
             ], true, 200);
 
+
+        } catch (\Exception $e) {
+            return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
+        }
+    }
+
+    // Luồng thêm bình luận
+    public function DeleteComment(Request $request)
+    {
+        try {
+            // Nhận dữ liệu từ request
+            $comment_id = $request->get('comment_id', 0);
+
+            if (!$comment_id) {
+                return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
+            }
+
+            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
+            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
+            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
+
+            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
+                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
+            }
+
+            $key = base64_decode(getenv('KEY_ENCRYPT'));
+            if (!$key) {
+                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
+            }
+
+            $user_id = decryptData($UID_ENCRYPT, $key);
+            $userType = decryptData($UT_ENCRYPT, $key);
+
+            if (!is_numeric($user_id) || !is_numeric($userType)) {
+                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
+            }
+
+            // Tìm bình luận theo ID
+            $comment = Comment::where('comment_id', $comment_id)->first();
+
+            if (!$comment) {
+                return apiResponse("error", "Bình luận không tồn tại", [], false, 404);
+            }
+
+            // Kiểm tra xem bình luận có thuộc về user hay không
+            if ($comment->user_id !== $user_id) {
+                return apiResponse("error", "Bạn không có quyền xóa bình luận này", [], false, 403);
+            }
+
+            // Xóa bình luận
+            $comment->delete();
+
+            return apiResponse("success", "Xóa bình luận thành công", [], true, 200);
 
         } catch (\Exception $e) {
             return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
