@@ -1,7 +1,6 @@
 $(document).ready(function () {
     $('.profile_edit-box').each(function () {
         let checkinput = $(this).find('.profile_edit_inp').val().trim(); // Lấy giá trị input hiện tại
-        console.log(checkinput);
         let title = $(this).find('.profile_edit-box-title'); // Lấy tiêu đề của input này
 
         if (checkinput !== "") {
@@ -315,7 +314,15 @@ function ProfileEdit(e) {
                 } else {
                     alert(data.message);
                 }
-            },
+            }, error: function (xhr) {
+                $("#loading").hide();
+                if (xhr.status === 401) {
+                    alert(xhr.responseJSON.message);
+                    window.location.href = "/dang-nhap-tai-khoan";
+                } else {
+                    alert(xhr.responseJSON.message);
+                }
+            }
         });
     }
 }

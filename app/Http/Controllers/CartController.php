@@ -27,6 +27,8 @@ class CartController extends Controller
             ->leftJoin('manage_discounts', 'products.product_code', '=', 'manage_discounts.discount_product_code') // Chuyển sang leftJoin để tránh mất sản phẩm không có giảm giá
             ->where('carts.cart_user_id', $user_id)
             ->select(
+                'products.product_id',
+                'products.product_alias',
                 'products.product_code',
                 'products.product_name',
                 'products.product_create_time',
@@ -283,6 +285,70 @@ class CartController extends Controller
                     'conf_update_time' => time(),
                 ];
             }
+
+            // Thêm sản phẩm mới vào bảng xác nhận đơn hàng
+            if (!empty($orders)) {
+                order_confirm::insert($orders);
+            }
+
+            return apiResponse("success", "Xác nhận đơn hàng thành công", [], true, 200);
+        } catch (\Exception $e) {
+            \Log::error("Lỗi khi thêm đơn hàng: " . $e->getMessage(), [
+                'request' => $request->all(),
+                'user_id' => $user_id ?? null
+            ]);
+            return apiResponse("error", "Lỗi server, vui lòng thử lại sau.", [], false, 500);
+        }
+    }
+
+    public function ConfirmOrderBuyNow(Request $request)
+    {
+        try {
+            // Nhận dữ liệu từ request
+            $unitprice = $request->get('unitprice');
+            $total_price = $request->get('total_price');
+            $feeship = $request->get('feeship', '');
+            $product_code = $request->get('product_code', '');
+            $product_amount = $request->get('product_amount', '');
+            $product_classification = $request->get('product_classification', '');
+            // Kiểm tra dữ liệu đầu vào
+            if (!$total_price || !$unitprice || !$product_code || !$product_amount || !$product_classification) {
+                return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
+            }
+
+            // Lấy thông tin người dùng từ cookie
+            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
+            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
+
+            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
+                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
+            }
+
+            $key = base64_decode(getenv('KEY_ENCRYPT'));
+            $user_id = decryptData($UID_ENCRYPT, $key);
+            $userType = decryptData($UT_ENCRYPT, $key);
+
+            if (!$user_id || !$userType) {
+                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
+            }
+
+            // XÓA TẤT CẢ CÁC SẢN PHẨM CŨ CỦA NGƯỜI DÙNG TRONG BẢNG XÁC NHẬN ĐƠN HÀNG
+            order_confirm::where('conf_user_id', $user_id)->delete();
+
+            $code_order = 'M' . mt_rand(11111, 99999);
+
+            $orders = [
+                'conf_code_order' => $code_order,
+                'conf_user_id' => $user_id,
+                'conf_product_code' => $product_code,
+                'conf_product_amount' => $product_amount ?? 0,
+                'conf_product_classification' => $product_classification,
+                'conf_total_price' => $total_price ?? 0,
+                'conf_unitprice' => $unitprice ?? 0,
+                'conf_feeship' => $feeship ?? 0,
+                'conf_create_time' => time(),
+                'conf_update_time' => time(),
+            ];
 
             // Thêm sản phẩm mới vào bảng xác nhận đơn hàng
             if (!empty($orders)) {

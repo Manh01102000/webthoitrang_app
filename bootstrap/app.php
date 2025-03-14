@@ -36,9 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // notfound không tìm thấy và chuyển sang 404
             'notfound' => \App\Http\Middleware\HandleNotFound::class,
             // jwt.auth: Middleware kiểm tra token hợp lệ.
-            'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
-            // jwt.refresh: Middleware tự động cấp token mới khi token hết hạn.
-            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+            'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class,
         ]);
     })
 
@@ -49,28 +47,32 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // Khi xảy ra lỗi 404 (NotFoundHttpException), chuyển hướng đến trang '/404'
         $exceptions->render(function (NotFoundHttpException $e, $request) {
-            return redirect('/404'); // Chuyển hướng đến trang 404 do người dùng định nghĩa
+            return redirect('/404');
         });
 
-        // Xử lý Token Hết Hạn
-        $exceptions->render(function (TokenExpiredException $e, $request) {
-            return response()->json([
-                'message' => 'Token đã hết hạn. Vui lòng đăng nhập lại!',
-            ], 401);
-        });
+        // Xử lý tất cả lỗi liên quan đến JWT
+        $exceptions->render(function (\Exception $e, $request) {
+            // Ghi log lỗi để dễ debug
+            \Log::error("JWT Error: " . $e->getMessage());
+            // Xác định loại lỗi và trả về thông báo phù hợp
+            // instanceof là một toán tử trong PHP dùng để kiểm tra xem một biến có thuộc về một class cụ thể hay không.
+            // TokenExpiredException,TokenInvalidException... là một class đại diện cho lỗi khi token JWT đã hết hạn.
+            // Nếu $e là một instance của TokenExpiredException,TokenInvalidException,.. tức là lỗi xảy ra do token đã hết hạn,
+            // không hợp lệ thì khối lệnh tương ứng sẽ được thực thi. 
+            if ($e instanceof TokenExpiredException) {
+                $message = 'Token đã hết hạn. Vui lòng đăng nhập lại!';
+                $statusCode = 401;
+            } elseif ($e instanceof TokenInvalidException) {
+                $message = 'Token không hợp lệ!';
+                $statusCode = 401;
+            } elseif ($e instanceof JWTException) {
+                $message = 'Token không được cung cấp!';
+                $statusCode = 401;
+            } else {
+                return null; // Trả về null để Laravel xử lý các lỗi khác
+            }
 
-        // Xử lý Token Không Hợp Lệ
-        $exceptions->render(function (TokenInvalidException $e, $request) {
-            return response()->json([
-                'message' => 'Token không hợp lệ!',
-            ], 401);
-        });
-
-        // Xử lý Lỗi Không Tìm Thấy Token
-        $exceptions->render(function (JWTException $e, $request) {
-            return response()->json([
-                'message' => 'Token không được cung cấp!',
-            ], 401);
+            return response()->json(['message' => $message], $statusCode);
         });
     })
 

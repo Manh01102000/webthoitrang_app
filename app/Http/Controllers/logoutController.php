@@ -16,11 +16,12 @@ class LogoutController extends Controller
         session_destroy();
 
         // Xóa cookies
-        setcookie('UID', '', time() - 3600, '/'); // Đặt thời gian hết hạn trong quá khứ
-        setcookie('PASSWORD', '', time() - 3600, '/');
-        setcookie('UT', '', time() - 3600, '/');
-        setcookie('PHPSESPASS', '', time() - 3600, '/');
-        setcookie('PHPSESSID', '', time() - 3600, '/');
+        setcookie('UID', '', -1, '/'); // Đặt thời gian hết hạn trong quá khứ
+        setcookie('PASSWORD', '', -1, '/');
+        setcookie('UT', '', -1, '/');
+        setcookie('PHPSESPASS', '', -1, '/');
+        setcookie('PHPSESSID', '', -1, '/');
+        setcookie('jwt_token', '', -1, '/');
 
         // Xóa giá trị cookie khỏi biến $_COOKIE (nếu cần)
         unset($_COOKIE["UID"]);
@@ -28,6 +29,7 @@ class LogoutController extends Controller
         unset($_COOKIE["UT"]);
         unset($_COOKIE["PHPSESPASS"]);
         unset($_COOKIE["PHPSESSID"]);
+        unset($_COOKIE["jwt_token"]);
 
         // Xóa token
         // Lấy token từ request header

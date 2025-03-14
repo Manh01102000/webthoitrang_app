@@ -333,11 +333,27 @@ function loadMoreReplies(commentId, buttonElement) {
 }
 
 // Xóa bình luận
-$(document).on("click", ".delete", function () {
-    $(this).closest(".comment").remove();
-    commentCount--;
-    $("#comment-count").text(commentCount);
-});
+function DeleteComment(e) {
+    let commentCount = $(".comment-section .comments_statistic").text().trim();
+    $(".comment-section .comments_statistic").text(Number(commentCount) - 1);
+    let comment_id = $(e).closest(".show-comment").attr("comment-id") || 0;
+    if (!comment_id) {
+        return alert("Có lỗi xảy ra vui lòng tải lại trang!");
+    }
+    if (confirm("Bạn có chắc muốn xóa bình luận này?")) {
+        $.ajax({
+            url: '/api/DeleteComment',
+            method: 'POST',
+            data: { comment_id: comment_id },
+            success: function (response) {
+                if (response && response.result) {
+                    alert(response.message);
+                    $(e).closest(".show-comment").remove();
+                }
+            }
+        });
+    }
+}
 
 // Phản hồi bình luận
 function replyComment(e) {

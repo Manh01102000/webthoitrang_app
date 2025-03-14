@@ -1,10 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-
+// Imports
 use Illuminate\Http\Request;
-
+// Model
 use App\Models\User;
+// JWT
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ChangePasswordController extends Controller
 {
@@ -64,35 +69,38 @@ class ChangePasswordController extends Controller
             'data' => '',
             'message' => "Thiếu dữ liệu truyền lên",
         ];
-        // Lấy UID từ cookie
-        $UID_ENCRYPT = !empty($_COOKIE['UID']) ? $_COOKIE['UID'] : 0;
-        //key mã hóa (dùng cho giải mã và mã hóa)
-        $key = base64_decode(getenv('KEY_ENCRYPT')); // Sinh key 32 byte rồi mã hóa Base64
-        $use_id = decryptData($UID_ENCRYPT, $key);
-        $emp_oldpassword = $request->get('emp_oldpassword');
-        if (
-            isset($use_id) && $use_id != "" &&
-            isset($emp_oldpassword) && $emp_oldpassword != ""
-        ) {
-            $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_oldpassword)]])->first();
-            if (!empty($select)) {
-                $data_mess = [
-                    'result' => true,
-                    'data' => 2,
-                    'message' => "Mật khẩu trùng khớp",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
-            } else {
-                $data_mess = [
-                    'result' => true,
-                    'data' => 1,
-                    'message' => "Mật khẩu cũ không đúng",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
+        try {
+            // 🟢 Lấy user từ request
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
+            $use_id = $user->use_id;
+            $emp_oldpassword = $request->get('emp_oldpassword');
+            if (
+                isset($use_id) && $use_id != "" &&
+                isset($emp_oldpassword) && $emp_oldpassword != ""
+            ) {
+                $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_oldpassword)]])->first();
+                if (!empty($select)) {
+                    return response()->json([
+                        'result' => true,
+                        'data' => 2,
+                        'message' => "Mật khẩu trùng khớp",
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'result' => true,
+                        'data' => 1,
+                        'message' => "Mật khẩu cũ không đúng",
+                    ], 200);
+                }
+            }
+            return response()->json($data_mess, 400);
 
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Lỗi xác thực token!'], 401);
         }
-        return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
     }
 
     public function check_password_new(Request $request)
@@ -102,35 +110,38 @@ class ChangePasswordController extends Controller
             'data' => '',
             'message' => "Thiếu dữ liệu truyền lên",
         ];
-        // Lấy UID từ cookie
-        $UID_ENCRYPT = !empty($_COOKIE['UID']) ? $_COOKIE['UID'] : 0;
-        //key mã hóa (dùng cho giải mã và mã hóa)
-        $key = base64_decode(getenv('KEY_ENCRYPT')); // Sinh key 32 byte rồi mã hóa Base64
-        $use_id = decryptData($UID_ENCRYPT, $key);
-        $emp_password = $request->get('emp_password');
-        if (
-            isset($use_id) && $use_id != "" &&
-            isset($emp_password) && $emp_password != ""
-        ) {
-            $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_password)]])->first();
-            if (!empty($select)) {
-                $data_mess = [
-                    'result' => true,
-                    'data' => 1,
-                    'message' => "Mật khẩu trùng khớp với mật khẩu cũ",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
-            } else {
-                $data_mess = [
-                    'result' => true,
-                    'data' => 2,
-                    'message' => "Mật khẩu mới",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
+        try {
+            // 🟢 Lấy user từ request
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
+            $use_id = $user->use_id;
+            $emp_password = $request->get('emp_password');
+            if (
+                isset($use_id) && $use_id != "" &&
+                isset($emp_password) && $emp_password != ""
+            ) {
+                $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_password)]])->first();
+                if (!empty($select)) {
+                    return response()->json([
+                        'result' => true,
+                        'data' => 1,
+                        'message' => "Mật khẩu trùng khớp với mật khẩu cũ",
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'result' => true,
+                        'data' => 2,
+                        'message' => "Mật khẩu mới",
+                    ], 200);
+                }
+            }
+            return response()->json($data_mess, 400);
 
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Lỗi xác thực token!'], 401);
         }
-        return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
     }
 
     public function ChangePassword(Request $request)
@@ -140,43 +151,42 @@ class ChangePasswordController extends Controller
             'data' => '',
             'message' => "Thiếu dữ liệu truyền lên",
         ];
-        // Lấy UID từ cookie
-        $UID_ENCRYPT = !empty($_COOKIE['UID']) ? $_COOKIE['UID'] : 0;
-        //key mã hóa (dùng cho giải mã và mã hóa)
-        $key = base64_decode(getenv('KEY_ENCRYPT')); // Sinh key 32 byte rồi mã hóa Base64
-        $use_id = decryptData($UID_ENCRYPT, $key);
-        $emp_password = $request->get('emp_password');
-        if (
-            isset($use_id) && $use_id != "" &&
-            isset($emp_password) && $emp_password != ""
-        ) {
-            $select = User::where('use_id', $use_id)->first();
-
-            if (!empty($select)) {
-                // Cập nhật mật khẩu tài khoản
-                $post = User::where('use_id', $use_id)->update([
-                    'use_pass' => md5($emp_password),
-                    'use_update_time' => time(),
-                ]);
-                // 
-                $data_mess = [
-                    'result' => true,
-                    'data' => $post,
-                    'message' => "Cập nhật mật khẩu thành công",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
-            } else {
-                $data_mess = [
-                    'result' => false,
-                    'data' => '',
-                    'message' => "Không tìm thấy người dùng",
-                ];
-                return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
+        try {
+            // 🟢 Lấy user từ request
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
+            $use_id = $user->use_id;
+            $emp_password = $request->get('emp_password');
+            if (
+                isset($use_id) && $use_id != "" &&
+                isset($emp_password) && $emp_password != ""
+            ) {
+                $select = User::where('use_id', $use_id)->first();
+                if (!empty($select)) {
+                    // Cập nhật mật khẩu tài khoản
+                    $post = User::where('use_id', $use_id)->update([
+                        'use_pass' => md5($emp_password),
+                        'use_update_time' => time(),
+                    ]);
+                    return response()->json([
+                        'result' => true,
+                        'data' => $post,
+                        'message' => "Cập nhật mật khẩu thành công",
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'result' => false,
+                        'data' => '',
+                        'message' => "Không tìm thấy người dùng",
+                    ], 200);
+                }
+            }
+            return response()->json($data_mess, 400);
 
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Lỗi xác thực token!'], 401);
         }
-        return json_encode($data_mess, JSON_UNESCAPED_UNICODE);
     }
-
-
 }

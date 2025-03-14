@@ -121,7 +121,7 @@
                                         </div>
                                         <div class="container-product-show d_flex">
                                             <p class="product-name w100">
-                                                <a href="/" class="font_s16 line_h20 font_w500 cl_main product-name-link" title="{{ $datacart['product_name'] }}">
+                                                <a href="{{ rewriteProduct($datacart['product_id'],$datacart['product_alias'],$datacart['product_name']) }}" rel="nofollow" class="font_s16 line_h20 font_w500 cl_main product-name-link" title="{{ $datacart['product_name'] }}">
                                                     {{ $datacart['product_name'] }}
                                                 </a>
                                             </p>

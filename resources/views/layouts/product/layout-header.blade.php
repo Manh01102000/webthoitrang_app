@@ -36,6 +36,8 @@
     }
 ?>
 <div class="prod-detail-top d_flex gap_15 w100"
+    data-user = "{{ $dataAll['data']['data']['us_id'] ?? 0 }}"
+    data-product-code="{{ $dataAll['ProductDetails']['product_code'] }}"
     data-classification="{{ implode(';',$product_classification) }}" 
     data-price="{{ implode(';',$product_price) }}" 
     data-stock="{{ implode(';',$product_stock) }}"
@@ -104,9 +106,9 @@
                 </div>
             </div>
             <div class="prod-card_common prod-card_price d_flex al_ct gap_10 w100">
-                <p class="prod-card_price_original font_s18 line_h24 font_w600 cl_red {{ $check_discount != 0 ? "active_price_discount" : "" }}">{{ number_format($product_price_position,0,',','.') }} đ</p>
+                <p class="prod-card_price_original font_s18 line_h24 font_w600 cl_red {{ $check_discount != 0 ? "active_price_discount" : "" }}" data-price_original="{{ $product_price_position }}">{{ number_format($product_price_position,0,',','.') }} đ</p>
                 @if ($check_discount != 0)
-                    <p class="prod-card_price_discount font_s18 line_h24 font_w600 cl_red">{{ number_format($product_discount,0,',','.') }} đ</p>
+                    <p class="prod-card_price_discount font_s18 line_h24 font_w600 cl_red" data-price_discount="{{ $product_discount }}">{{ number_format($product_discount,0,',','.') }} đ</p>
                 @endif
             </div>
             <div class="prod-card_common prod-card_color d_flex fl_cl w100 gap_5">
@@ -125,12 +127,12 @@
                     @endforeach
                 </div>
             </div>
-            <div class="prod-card_common prod-card_amount_buy d_flex al_ct w100 gap_15">
+            <div class="prod-card_common prod-card_amount_buy d_flex al_ct w100 gap_15" data-stock="{{ $product_stock_position }}">
                 <p class="prod-card_text font_s14 font_w500 line_h20 cl_000">Số lượng</p>
                 <div class="prod-card_option d_flex al_ct gap_15">
-                    <button type="button" class="minus-product minus_plus_gnr d_flex cursor_pt" checkdiscount="0" data="0" onclick="MinusPrice(this)">-</button>
-                    <span class="product-card_count font_s15 line_h20 font_w400 cl_000">1</span>
-                    <button type="button" class="plus-product minus_plus_gnr d_flex cursor_pt" checkdiscount="0" data="0" onclick="PlusPrice(this)">+</button>
+                    <button type="button" class="minus-product minus_plus_gnr d_flex cursor_pt" checkdiscount="0" data="0" onclick="MinusCountProduct(this)">-</button>
+                    <input type="text" name="product-card_count" value="1" class="product-card_count font_s15 line_h20 font_w400 cl_000">
+                    <button type="button" class="plus-product minus_plus_gnr d_flex cursor_pt" checkdiscount="0" data="0" onclick="PlusCountProduct(this)">+</button>
                 </div>
                 <span class="product-card_stock font_s15 line_h20 font_w400 cl_000">{{ $product_stock_position }} sản phẩm sẵn có</span>
             </div>
@@ -138,14 +140,16 @@
                 <p class="prod-card_text font_s14 font_w500 line_h20 cl_000">Vận chuyển</p>
                 <div class="prod-card_shipping d_flex al_ct gap_10">
                     <img src="{{ asset('/images/product_icon/truck-fast.svg') }}" width="18" height="18" alt="icon">
-                    <p class="font_s14 mt_5 line_h16 font_w400 cl_main">Miễn phí vận chuyển</p>
+                    <p class="fee_ship font_s14 mt_5 line_h16 font_w400 cl_main" data-feeship="{{ !empty($dataAll['ProductDetails']['product_ship']) && $dataAll['ProductDetails']['product_ship'] == 1 ? 0 : $dataAll['ProductDetails']['product_feeship'] ?? 0 }}">
+                        {{ !empty($dataAll['ProductDetails']['product_ship']) && $dataAll['ProductDetails']['product_ship'] == 1 ? "Miễn phí vận chuyển" : number_format($dataAll['ProductDetails']['product_feeship'] ?? 0, 0, ',', '.') . ' đ' }}
+                    </p>
                 </div>
             </div>
             <div class="prod-card_common prod-card_button d_flex al_ct w100 gap_10">
-                <button class="card_button card_button_buy">
+                <button class="card_button card_button_buy" onclick="BuyNow(this)">
                     <p class="font_s14 line_h16 font_w400 cl_main">Mua ngay</p>
                 </button>
-                <button class="card_button card_button_addcart">
+                <button class="card_button card_button_addcart" onclick="addCart(this)">
                     <div class="icon_addcart">
                         <svg width="18" height="18" class="svg-inline--fa fa-cart-plus fa-w-18" aria-hidden="true" data-prefix="fa" data-icon="cart-plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg="">
                             <path fill="currentColor" d="M504.717 320H211.572l6.545 32h268.418c15.401 0 26.816 14.301 23.403 29.319l-5.517 24.276C523.112 414.668 536 433.828 536 456c0 31.202-25.519 56.444-56.824 55.994-29.823-.429-54.35-24.631-55.155-54.447-.44-16.287 6.085-31.049 16.803-41.548H231.176C241.553 426.165 248 440.326 248 456c0 31.813-26.528 57.431-58.67 55.938-28.54-1.325-51.751-24.385-53.251-52.917-1.158-22.034 10.436-41.455 28.051-51.586L93.883 64H24C10.745 64 0 53.255 0 40V24C0 10.745 10.745 0 24 0h102.529c11.401 0 21.228 8.021 23.513 19.19L159.208 64H551.99c15.401 0 26.816 14.301 23.403 29.319l-47.273 208C525.637 312.246 515.923 320 504.717 320zM408 168h-48v-40c0-8.837-7.163-16-16-16h-16c-8.837 0-16 7.163-16 16v40h-48c-8.837 0-16 7.163-16 16v16c0 8.837 7.163 16 16 16h48v40c0 8.837 7.163 16 16 16h16c8.837 0 16-7.163 16-16v-40h48c8.837 0 16-7.163 16-16v-16c0-8.837-7.163-16-16-16z"></path>
