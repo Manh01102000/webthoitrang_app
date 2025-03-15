@@ -4,9 +4,10 @@ use App\Models\User;
 use App\Models\admin;
 use App\Models\category;
 use App\Models\cart;
-// Authentic
+// JWT
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 // Lấy cache
 use Illuminate\Support\Facades\Cache;
@@ -1170,6 +1171,19 @@ function apiResponse($status, $message, $data = [], $result = true, $httpCode = 
     ], $httpCode);
 }
 
+function apiResponseWithCookie($status, $message, $data = [], $namecookie, $cookie, $timecookie, $result = true, $httpCode = 200)
+{
+    return response()->json([
+        'status' => $status,
+        'message' => $message,
+        'data' => $data,
+        'result' => $result
+    ], $httpCode)
+        // Sau khi lên serve thì mở bảo mật XSS không lấy được token từ js
+        // ->withCookie(cookie($namecookie, $cookie, $timecookie, '/', null, true, true));
+        ->withCookie(cookie($namecookie, $cookie, $timecookie, '/', null, false, true));
+}
+
 //==============Hàm gửi email====================
 //khi xác thực tài khoản
 function sendOTPEmail($name, $email, $subject = "Email xác thực tài khoản", $otp)
@@ -1182,6 +1196,17 @@ function sendOTPEmail($name, $email, $subject = "Email xác thực tài khoản"
 }
 
 // ======================Dữ liệu cứng=================================
+function OrderStatus()
+{
+    return [
+        '0' => 'Chờ xác nhận',
+        '1' => 'Đang xử lý',
+        '2' => 'Đang giao hàng',
+        '3' => 'Đã hủy',
+        '4' => 'Đã giao',
+        '5' => 'Hoàn tất',
+    ];
+}
 function productSizes()
 {
     $product_sizes = [

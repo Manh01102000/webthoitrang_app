@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             // Email liên hệ
             $table->string('use_email_contact')->nullable();
             // Mật khẩu tài khoản
-            $table->string('use_pass')->nullable();
+            $table->string('password')->nullable();
             // Tài khoản xác thực
             $table->integer('use_authentic')->default('0');
             // Mã OTP

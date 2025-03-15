@@ -70,18 +70,19 @@ class ChangePasswordController extends Controller
             'message' => "Thiếu dữ liệu truyền lên",
         ];
         try {
-            // 🟢 Lấy user từ request
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
             $user = $request->user;
             if (!$user) {
                 return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
-            $use_id = $user->use_id;
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             $emp_oldpassword = $request->get('emp_oldpassword');
             if (
-                isset($use_id) && $use_id != "" &&
+                isset($user_id) && $user_id != "" &&
                 isset($emp_oldpassword) && $emp_oldpassword != ""
             ) {
-                $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_oldpassword)]])->first();
+                $select = User::where([['use_id', $user_id], ['use_pass', md5($emp_oldpassword)]])->first();
                 if (!empty($select)) {
                     return response()->json([
                         'result' => true,
@@ -111,18 +112,19 @@ class ChangePasswordController extends Controller
             'message' => "Thiếu dữ liệu truyền lên",
         ];
         try {
-            // 🟢 Lấy user từ request
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
             $user = $request->user;
             if (!$user) {
                 return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
-            $use_id = $user->use_id;
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             $emp_password = $request->get('emp_password');
             if (
-                isset($use_id) && $use_id != "" &&
+                isset($user_id) && $user_id != "" &&
                 isset($emp_password) && $emp_password != ""
             ) {
-                $select = User::where([['use_id', $use_id], ['use_pass', md5($emp_password)]])->first();
+                $select = User::where([['use_id', $user_id], ['use_pass', md5($emp_password)]])->first();
                 if (!empty($select)) {
                     return response()->json([
                         'result' => true,
@@ -152,21 +154,22 @@ class ChangePasswordController extends Controller
             'message' => "Thiếu dữ liệu truyền lên",
         ];
         try {
-            // 🟢 Lấy user từ request
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
             $user = $request->user;
             if (!$user) {
                 return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
-            $use_id = $user->use_id;
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             $emp_password = $request->get('emp_password');
             if (
-                isset($use_id) && $use_id != "" &&
+                isset($user_id) && $user_id != "" &&
                 isset($emp_password) && $emp_password != ""
             ) {
-                $select = User::where('use_id', $use_id)->first();
+                $select = User::where('use_id', $user_id)->first();
                 if (!empty($select)) {
                     // Cập nhật mật khẩu tài khoản
-                    $post = User::where('use_id', $use_id)->update([
+                    $post = User::where('use_id', $user_id)->update([
                         'use_pass' => md5($emp_password),
                         'use_update_time' => time(),
                     ]);

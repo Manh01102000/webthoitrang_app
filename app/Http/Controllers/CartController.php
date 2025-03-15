@@ -101,6 +101,14 @@ class CartController extends Controller
     public function AddToCart(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
+            // ================================================
             $product_amount = $request->get('product_amount');
             $product_code = $request->get('product_code');
             $product_size = $request->get('product_size');
@@ -111,17 +119,6 @@ class CartController extends Controller
             }
 
             $product_classification = trim($product_size . ',' . $product_color);
-
-            // Lấy cookie
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? 0;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? 0;
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!$user_id || !$userType) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
-            }
 
             // Kiểm tra sản phẩm trong giỏ hàng
             $dataCart = cart::where([
@@ -159,6 +156,13 @@ class CartController extends Controller
     public function updateCartCountBuy(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Nhận dữ liệu từ request
             $cart_product_amount = (int) $request->get('cart_product_amount');
             $cart_id = (int) $request->get('cart_id');
@@ -166,22 +170,6 @@ class CartController extends Controller
             // Kiểm tra dữ liệu đầu vào (tránh lỗi null hoặc giá trị không hợp lệ)
             if (!$cart_product_amount || !$cart_id) {
                 return apiResponse("error", "Thiếu ID giỏ hàng hoặc số lượng", [], false, 400);
-            }
-
-            // Lấy thông tin người dùng từ cookie
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!$user_id || !$userType) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
             }
 
             // Kiểm tra giỏ hàng có tồn tại và thuộc về user không
@@ -214,6 +202,13 @@ class CartController extends Controller
     public function ConfirmOrder(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Nhận dữ liệu từ request
             $arr_cart_id = $request->get('arr_cart_id');
             $arr_unitprice = $request->get('arr_unitprice');
@@ -223,22 +218,6 @@ class CartController extends Controller
             // Kiểm tra dữ liệu đầu vào
             if (!$arr_cart_id || !$arr_total_price || !$arr_unitprice) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // Lấy thông tin người dùng từ cookie
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!$user_id || !$userType) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
             }
 
             // Chuyển đổi dữ liệu thành mảng
@@ -304,6 +283,13 @@ class CartController extends Controller
     public function ConfirmOrderBuyNow(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Nhận dữ liệu từ request
             $unitprice = $request->get('unitprice');
             $total_price = $request->get('total_price');
@@ -314,22 +300,6 @@ class CartController extends Controller
             // Kiểm tra dữ liệu đầu vào
             if (!$total_price || !$unitprice || !$product_code || !$product_amount || !$product_classification) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // Lấy thông tin người dùng từ cookie
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!$user_id || !$userType) {
-                return apiResponse("error", "Không xác định được người dùng", [], false, 400);
             }
 
             // XÓA TẤT CẢ CÁC SẢN PHẨM CŨ CỦA NGƯỜI DÙNG TRONG BẢNG XÁC NHẬN ĐƠN HÀNG

@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 // MODEL
 use App\Models\User;
 // JWT
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -81,7 +83,7 @@ class RegisterController extends Controller
         $ip_address = client_ip();
 
         if (!$emp_account || !$emp_name || !$emp_password || !$emp_phone || !$emp_birth) {
-            return apiResponse("success", "Thiếu dữ liệu truyền lên", [], false, 400);
+            return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
         }
 
         try {
@@ -91,7 +93,7 @@ class RegisterController extends Controller
                 'use_email_account' => $emp_account,
                 'use_role' => 1,
                 'use_email_contact' => $emp_account,
-                'use_pass' => md5($emp_password), // Bảo mật hơn md5()
+                'password' => Hash::make($emp_password), // ✅ Sử dụng bcrypt()
                 'use_phone' => $emp_phone,
                 'use_authentic' => 0,
                 'use_otp' => 0,
@@ -105,7 +107,7 @@ class RegisterController extends Controller
 
             // Lấy ID & password đã mã hóa
             $cookie_last_id = $user->use_id;
-            $cookie_password = $user->use_pass;
+            $cookie_password = $user->password;
             $cookie_ut = 1;
 
             // Key mã hóa
@@ -122,17 +124,16 @@ class RegisterController extends Controller
 
             // Tạo JWT token
             $token = JWTAuth::fromUser($user);
-            // setcookie('jwt_token', $token, $expire_time, '/', '', true, true);
-            setcookie('jwt_token', $token, $expire_time, '/', null, false, true);
 
-            // Trả về dữ liệu thành công
-            return apiResponse("success", "Đăng ký tài khoản thành công", [
-                'data' => $user,
-                'token' => $token,
-            ], true, 200);
+            // Trả về dữ liệu kèm cookie
+            return apiResponseWithCookie("success", "Đăng ký tài khoản thành công", [
+                'user' => $user,
+                'token' => $token
+            ], 'jwt_token', $token, $expire_time, true, 200);
 
         } catch (\Exception $e) {
             return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
         }
     }
+
 }

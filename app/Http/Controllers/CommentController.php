@@ -11,10 +11,11 @@ use App\Models\comment_emoji;
 use App\Models\comment_replie;
 use App\Models\content_emojis;
 use App\Models\User;
-//JWT
+// JWT
 use Tymon\JWTAuth\Facades\JWTAuth;
-// COOKIE
-use Illuminate\Support\Facades\Cookie;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class CommentController extends Controller
 {
@@ -23,32 +24,19 @@ class CommentController extends Controller
     public function SubmitEmoji(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             $content_id = $request->get('data_id'); // ID sản phẩm hoặc bài viết
             $content_type = $request->get('data_type'); // 1: sản phẩm, 2: bài viết
             $dataemoji = $request->get('dataemoji'); // Emoji thả
 
             if (empty($content_id) || empty($content_type) || empty($dataemoji)) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             DB::transaction(function () use ($content_id, $content_type, $dataemoji, $user_id) {
@@ -69,32 +57,20 @@ class CommentController extends Controller
     public function SubmitEmojiComment(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
+            // ===============Lấy dữ liệu từ font-end=======================
             $data_id = $request->get('data_id');
             $data_type = $request->get('data_type');
             $dataemoji = $request->get('dataemoji');
 
             if (!$data_id || !$data_type || !$dataemoji) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             // Kiểm tra xem đã có bình luận chưa
@@ -151,6 +127,13 @@ class CommentController extends Controller
     public function AddComment(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Nhận dữ liệu từ request
             $data_id = $request->get('data_id');
             $data_type = $request->get('data_type'); // 1: sản phẩm, 2: bài viết
@@ -160,26 +143,6 @@ class CommentController extends Controller
 
             if (empty($data_id) || empty($data_type)) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             // Xử lý upload file (nếu có)
@@ -237,31 +200,18 @@ class CommentController extends Controller
     public function DeleteComment(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Nhận dữ liệu từ request
             $comment_id = $request->get('comment_id', 0);
 
             if (!$comment_id) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
-            }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             // Tìm bình luận theo ID

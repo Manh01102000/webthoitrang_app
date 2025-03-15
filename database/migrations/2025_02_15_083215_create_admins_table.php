@@ -18,7 +18,7 @@ class CreateAdminsTable extends Migration
             $table->string('admin_account')->nullable();
             $table->string('admin_phone')->nullable();
             $table->string('admin_email_contact')->nullable();
-            $table->string('admin_pass')->nullable();
+            $table->string('password')->nullable();
             $table->integer('admin_city')->default('0');
             $table->integer('admin_district')->default('0');
             $table->string('address')->nullable();

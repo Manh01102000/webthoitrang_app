@@ -15,8 +15,11 @@ use App\Models\order_confirm;
 use App\Models\address_order;
 use App\Models\orders;
 use App\Models\order_details;
-//JWT
+// JWT
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 // COOKIE
 use Illuminate\Support\Facades\Cookie;
 
@@ -146,6 +149,14 @@ class ConfirmOrderController extends Controller
     public function AddDataInforship(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
+
             // Tạo validator
             $validator = Validator::make($request->all(), [
                 'address_orders_user_name' => 'required|string|max:255',
@@ -160,26 +171,6 @@ class ConfirmOrderController extends Controller
             // Nếu validation thất bại, trả về lỗi
             if ($validator->fails()) {
                 return apiResponse("error", "Dữ liệu không hợp lệ", $validator->errors(), false, 422);
-            }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             // Lưu dữ liệu vào DB
@@ -200,33 +191,19 @@ class ConfirmOrderController extends Controller
     public function SetShipDefalt(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Tạo validator
             $address_orders_id = $request->get('address_orders_id');
             // Nếu validation thất bại, trả về lỗi
             if ($address_orders_id == 0) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 403);
             }
-
-            // ======= Lấy thông tin người dùng từ cookie & giải mã =======
-            $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
-            $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(getenv('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
-            }
-
             // Lưu dữ liệu vào DB
             // Đặt tất cả địa chỉ của user này về 0 trước
             address_order::where('address_orders_user_id', $user_id)
@@ -246,6 +223,13 @@ class ConfirmOrderController extends Controller
     public function PayMent(Request $request)
     {
         try {
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
+            if (!$user) {
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
+            }
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // Tạo validator
             $arr_cart_id = $request->get('arr_cart_id', []);
             $validator = Validator::make($request->all(), [
@@ -273,26 +257,6 @@ class ConfirmOrderController extends Controller
             // Nếu validation thất bại, trả về lỗi
             if ($validator->fails()) {
                 return apiResponse("error", "Dữ liệu không hợp lệ", $validator->errors(), false, 422);
-            }
-
-            // Lấy thông tin người dùng từ cookie
-            $UID_ENCRYPT = request()->cookie('UID');
-            $UT_ENCRYPT = request()->cookie('UT');
-
-            if (!$UID_ENCRYPT || !$UT_ENCRYPT) {
-                return apiResponse("error", "Không tìm thấy thông tin người dùng", [], false, 401);
-            }
-
-            $key = base64_decode(env('KEY_ENCRYPT'));
-            if (!$key) {
-                return apiResponse("error", "Lỗi hệ thống: không thể giải mã dữ liệu", [], false, 500);
-            }
-
-            $user_id = decryptData($UID_ENCRYPT, $key);
-            $userType = decryptData($UT_ENCRYPT, $key);
-
-            if (!is_numeric($user_id) || !is_numeric($userType)) {
-                return apiResponse("error", "Dữ liệu người dùng không hợp lệ", [], false, 401);
             }
 
             $arr_product_code = explode(',', $validator->validated()['arr_product_code']);
