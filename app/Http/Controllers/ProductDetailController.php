@@ -349,22 +349,13 @@ class ProductDetailController extends Controller
                 return apiResponse("error", "Thiếu ID sản phẩm hoặc đánh giá", [], false, 400);
             }
 
-            // Lấy thông tin người dùng từ token trong cookie
-            $cookie = Cookie::get('jwt_token');
-
-            if (!$cookie) {
-                return apiResponse("error", "Không tìm thấy token", [], false, 401);
-            }
-
-            $user = JWTAuth::setToken($cookie)->authenticate();
-
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
+            $user = $request->user;
             if (!$user) {
-                return apiResponse("error", "Token không hợp lệ hoặc đã hết hạn", [], false, 401);
+                return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
-
-            // Convert user thành array nếu cần
-            $user = $user->toArray();
-            $user_id = $user['use_id'];
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
 
             $review = Review::where([
                 ['review_user_id', $user_id],

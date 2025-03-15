@@ -85,11 +85,11 @@
     margin-top: 10px;
     width: 100%;
     min-height: calc(301px - 69px);
-    background: #f4f4f4;
     display: flex;
     border-radius: 0px 0px 10px 10px;
     padding: 0px 10px 10px;
     flex-direction: column;
+    gap: 20px;
 }
 
 .order-content-item {
@@ -117,8 +117,9 @@
 
 .order-head-brand-name {
     font-size: 15px;
-    font-weight: 500;
-    color: #333;
+    line-height: 20px;
+    font-weight: 600;
+    color: #000;
 }
 
 .order-head-status-text {
@@ -134,6 +135,13 @@
 }
 
 .box-order-product {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-order-product {
     display: flex;
     gap: 10px;
     width: 100%;
@@ -178,19 +186,20 @@
 }
 
 .product-infor-cate {
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
     width: 100%;
+    line-height: 18px;
 }
 
 .product-infor-number {
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
     width: 100%;
     text-align: right;
 }
 
-.product-infor-price {
+.product-infor-price,.product-infor-ship {
     display: flex;
     align-items: center;
     gap: 5px;

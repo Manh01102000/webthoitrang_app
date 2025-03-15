@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 class LogoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Bắt đầu session
         session_start();
@@ -31,14 +32,6 @@ class LogoutController extends Controller
         unset($_COOKIE["PHPSESSID"]);
         unset($_COOKIE["jwt_token"]);
 
-        // Xóa token
-        // Lấy token từ request header
-        $token = JWTAuth::getToken();
-
-        // Nếu có token, thực hiện vô hiệu hóa nó
-        if ($token) {
-            JWTAuth::invalidate($token);
-        }
         return redirect("/");
     }
 }

@@ -48,92 +48,86 @@
                     <main class="main-container">
                         <div class="container-management-order">
                             <div class="management-order">
-                                <nav class="management-order-nav">
-                                    <ul class="management-order-top">
-                                        <li class="menu-management-order active-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang">
-                                                Quản lý đơn hàng
-                                            </a>
-                                        </li>
-                                        <li class="menu-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang/dang-xu-ly">
-                                                Đang xử lý (0)
-                                            </a>
-                                        </li>
-                                        <li class="menu-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang/dang-giao-hang">
-                                                Đang giao hàng (0)
-                                            </a>
-                                        </li>
-                                        <li class="menu-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang/da-huy">
-                                                Đã hủy (0)
-                                            </a>
-                                        </li>
-                                        <li class="menu-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang-ban/da-giao">
-                                                Đã giao (0)
-                                            </a>
-                                        </li>
-                                        <li class="menu-management-order">
-                                            <a class="management-order-title font_s15 line_h500 font_w500 cl_000" href="/quan-ly-don-hang-ban/hoan-tat">
-                                                Hoàn tất (0)
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                                <!-- navigation -->
+                                @include('layouts.manager_order.order_navigation')
+                                <!-- end navigation -->
                                 <div class="management-order-content">
-                                    <div class="order-content-item">
-                                        <div class="order-content-head">
-                                            <div class="order-head-brand">
-                                                <img src="{{ asset('/images/icon/icon_store_black.png') }}" width="18px" height="18px" alt="icon">
-                                                <p class="order-head-brand-name">Fashion Houses</p>
-                                            </div>
-                                            <div class="order-head-status">
-                                                <p class="order-head-status-text">Chờ xử lý</p>
-                                            </div>
-                                        </div>
-                                        <div class="order-content-center">
-                                            <div class="box-order-product">
-                                                <div class="box-product-avatar">
-                                                    <img src="{{ asset('/images/product_sample/anh3.jpg') }}" class="product-avatar" alt="avatar">
+                                    @foreach ($dataAll['dataOrder'] as $key => $order)
+                                        @php
+                                            $dataorder = $order['order'];
+                                            $dataorderdetail = $order['details'];
+                                        @endphp
+                                        <div class="order-content-item" data-ordercode="{{ $dataorder['order_code'] }}">
+                                            <div class="order-content-head">
+                                                <div class="order-head-brand">
+                                                    <p class="order-head-brand-name">Mã đơn hàng: {{ $dataorder['order_code'] }}</p>
                                                 </div>
-                                                <div class="product-infor">
-                                                    <p class="product-infor-name">Tên sản phẩm</p>
-                                                    <p class="product-infor-cate">Loại sản phẩm: Áo nữ</p>
-                                                    <p class="product-infor-number">Số lượng: x1</p>
-                                                    <div class="product-infor-price">
-                                                        <p class="infor-price-discount font_s16 line_h20 font_w500 cl_red">
-                                                            {{ number_format(100000, 0, ',', '.') }} đ
-                                                        </p>
-                                                        <p class="infor-price-original font_s14 line_h18 font_w400 cl_333">
-                                                            {{ number_format(150000, 0, ',', '.') }} đ
-                                                        </p>
+                                                <div class="order-head-status">
+                                                    <p class="order-head-status-text">{{ OrderStatus()[$dataorder['order_status']] }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="order-content-center">
+                                                <div class="box-order-product">
+                                                    @foreach ($dataorderdetail as $orderdetail)
+                                                        @php 
+                                                        $data_product = $orderdetail['product']; 
+                                                        $product_images = explode(',', $data_product['product_images']);
+                                                        $url_avarta = getUrlImageVideoProduct($data_product['product_create_time'], 1) . $product_images[0];
+                                                        @endphp
+                                                        <div class="item-order-product">
+                                                            <div class="box-product-avatar">
+                                                                <img class="product-avatar lazyload"
+                                                                onerror="this.onerror=null; this.src='{{ asset('images/icon/load.gif') }}';"
+                                                                src="{{ asset('images/product_sample/anh1.jpg') }}"
+                                                                data-src="{{ asset($url_avarta) }}?v={{ time() }}"
+                                                                alt="{{ $data_product['product_name'] }}">
+                                                            </div>
+                                                            <div class="product-infor">
+                                                                <a href="{{ rewriteProduct($data_product['product_id'], $data_product['product_alias'], $data_product['product_name']) }}" rel="nofollow" class="product-infor-name cl_000" title="{{ $data_product['product_name'] }}">
+                                                                    {{ $data_product['product_name'] }}
+                                                                </a>
+                                                                <p class="product-infor-cate">Loại sản phẩm: {{ FindCategoryByCatId($data_product['category_children_code'])['cat_name'] }}</p>
+                                                                <p class="product-infor-cate">Thương hiệu: {{ $data_product['product_brand'] ?? '' }}</p>
+                                                                <p class="product-infor-number">Số lượng: x{{ $orderdetail['ordetail_product_amount'] ?? 1 }}</p>
+                                                                <div class="product-infor-price">
+                                                                    <p class="font_s14 line_h16 font_w400 cl_red">Thành tiền:</p>
+                                                                    <p class="infor-price-discount font_s14 line_h16 font_w400 cl_red">
+                                                                        {{ number_format($orderdetail['ordetail_product_totalprice'] ?? 0, 0, ',', '.') }} đ
+                                                                    </p>
+                                                                </div>
+                                                                <div class="product-infor-ship">
+                                                                    <p class="font_s14 line_h16 font_w400 cl_1287db">Phí ship:</p>
+                                                                    <p class="infor-price-discount font_s14 line_h16 font_w400 cl_1287db">
+                                                                        {{ number_format($orderdetail['ordetail_product_feeship'] ?? 0, 0, ',', '.') }} đ
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <!-- <div class="box-order-gift">
+                                                    <div class="box-gift-avatar">
+                                                        <img src="{{ asset('/images/product_sample/anh3.jpg') }}"  class="gift-avatar" alt="avatar">
                                                     </div>
-                                                </div>
+                                                    <div class="gift-infor">
+                                                        <p class="gift-infor-desc">
+                                                            Top những bộ Áo Dài Chụp Ảnh Đẹp Nhất của Áo Dài Nhân dành riêng cho những ai yêu thích lưu giữ những khoảnh khắc đẹp. Mỗi mẫu áo dài trong bộ sưu tập này được chọn lựa kỹ lưỡng với chất liệu vải cao cấp và họa tiết tinh tế, mang lại vẻ đẹp thanh thoát và sang trọng, giúp bạn tỏa sáng trong từng khung hình.
+                                                        </p>
+                                                        <p class="gift-infor-text">Quà tặng</p>
+                                                    </div>
+                                                </div> -->
                                             </div>
-                                            <div class="box-order-gift">
-                                                <div class="box-gift-avatar">
-                                                    <img src="{{ asset('/images/product_sample/anh3.jpg') }}"  class="gift-avatar" alt="avatar">
-                                                </div>
-                                                <div class="gift-infor">
-                                                    <p class="gift-infor-desc">
-                                                        Top những bộ Áo Dài Chụp Ảnh Đẹp Nhất của Áo Dài Nhân dành riêng cho những ai yêu thích lưu giữ những khoảnh khắc đẹp. Mỗi mẫu áo dài trong bộ sưu tập này được chọn lựa kỹ lưỡng với chất liệu vải cao cấp và họa tiết tinh tế, mang lại vẻ đẹp thanh thoát và sang trọng, giúp bạn tỏa sáng trong từng khung hình.
-                                                    </p>
-                                                    <p class="gift-infor-text">Quà tặng</p>
+                                            <div class="order-content-bottom">
+                                                <p class="box-total-price">
+                                                    Tổng số tiền: <span class="total-price">{{ number_format($dataorder['order_total_price'], 0, ',', '.') }} đ</span>
+                                                </p>
+                                                <div class="container-button">
+                                                    <button type="button" class="btn-cancel-order" data-status="3" onclick="CancelOrder(this)">Hủy đơn hàng</button>
+                                                    <button type="button" class="btn-confirm-order" data-status="1" onclick="ConfirmOrder(this)">Xác nhận đơn hàng</button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="order-content-bottom">
-                                            <p class="box-total-price">
-                                                Tổng số tiền: <span class="total-price">{{ number_format(100000, 0, ',', '.') }} đ</span>
-                                            </p>
-                                            <div class="container-button">
-                                                <button type="button" class="btn-cancel-order">Hủy đơn hàng</button>
-                                                <button type="button" class="btn-confirm-order">Xác nhận đơn hàng</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>

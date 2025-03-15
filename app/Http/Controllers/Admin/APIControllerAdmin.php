@@ -15,7 +15,7 @@ use App\Models\manage_discount; // Import model manage_discount
 use App\Repositories\product\ProductRepositoryInterface;
 // use App\Repositories\User\UserRepositoryInterface;
 
-class APIController extends Controller
+class APIControllerAdmin extends Controller
 {
     protected $productRepo, $userRepo;
 
@@ -38,16 +38,9 @@ class APIController extends Controller
                 return apiResponse("error", "Thiếu tài khoản hoặc mật khẩu", [], false, 400);
             }
 
-            // Mã hóa mật khẩu với md5 để so sánh
-            $hashed_password = md5($admin_password);
-
-            // Kiểm tra tài khoản có tồn tại không
-            $admin = Admin::where([
-                ['admin_account', '=', $admin_account],
-                ['admin_pass', '=', $hashed_password]
-            ])->first();
-
-            if (!$admin) {
+            // Kiểm tra thông tin đăng nhập
+            $admin = Admin::where('admin_account', $admin_account)->first();
+            if (!$admin || !Hash::check($admin_password, $admin->password)) {
                 return apiResponse("error", "Tài khoản hoặc mật khẩu không chính xác", [], false, 401);
             }
 

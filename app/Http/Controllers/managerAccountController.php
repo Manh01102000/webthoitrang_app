@@ -62,12 +62,13 @@ class managerAccountController extends Controller
         ];
 
         try {
-            // 🟢 Lấy user từ request
+            // 🟢 ======= Lấy thông tin người dùng từ request =======
             $user = $request->user;
             if (!$user) {
                 return response()->json(['message' => 'Không tìm thấy người dùng!'], 401);
             }
-
+            $user_id = $user->use_id;
+            $userType = $user->use_role;
             // 🟢 Nhận dữ liệu từ request
             $avatar = $request->file('avatar');
             $emp_email_contact = $request->get('emp_email_contact');
@@ -84,8 +85,7 @@ class managerAccountController extends Controller
                 isset($emp_phone) && $emp_phone != "" &&
                 isset($emp_birth) && $emp_birth != ""
             ) {
-                $use_id = $user->use_id;
-                $select = User::where('use_id', $use_id)->first();
+                $select = User::where('use_id', $user_id)->first();
                 // Cập nhật ảnh đại diện
                 $use_logo = '';
                 if (!empty($avatar)) {
@@ -97,7 +97,7 @@ class managerAccountController extends Controller
                     $use_logo = UploadAvatar($tempPath, $select['use_name'], $select['use_create_time'], $extension);
                 }
                 // Cập nhật thông tin tài khoản
-                User::where('use_id', $use_id)->update([
+                User::where('use_id', $user_id)->update([
                     'use_name' => $emp_name,
                     'use_email_contact' => $emp_email_contact,
                     'use_phone' => $emp_phone,

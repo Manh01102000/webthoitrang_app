@@ -147,14 +147,14 @@ function ActiveNavBar(e) {
     $(e).addClass('active-nav-bar');
     if (checkdata == 1) {
         location.href = '/';
-    } 
+    }
     else if (checkdata == 2) {
         $('.container_navigation_mobile').css({
             "opacity": 1,
             "z-index": 3,
             "display": 'block',
         });
-    } 
+    }
     else if (checkdata == 3) {
         location.href = '/gio-hang';
     }

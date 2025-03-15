@@ -36,3 +36,8 @@ function closeShowInforAccount(e) {
     });
 }
 
+function LogOut(e) {
+    if (confirm("Bạn có chắc chắn muốn đăng xuất")) {
+        location.href = '/admin/dang-xuat';
+    }
+}

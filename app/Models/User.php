@@ -18,7 +18,6 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users'; // Tên bảng trong database
     public $timestamps = false;
     protected $primaryKey = 'use_id';
-
     protected $fillable = [
         'use_name',
         'use_role',
@@ -26,7 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'use_phone',
         'use_email_account',
         'use_email_contact',
-        'use_pass',
+        'password',
         'use_authentic',
         'use_otp',
         'is_login',

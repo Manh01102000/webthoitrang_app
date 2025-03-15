@@ -15,13 +15,11 @@ class JwtMiddleware
     {
         try {
             // 1 Lấy token từ Header hoặc Cookie
-            $token = $request->bearerToken() ?? $request->cookie('jwt_token');
+            $token = $request->bearerToken();
 
-            // 2 Nếu không có token, báo lỗi
             if (!$token) {
-                return response()->json(['message' => 'Token không được cung cấp!'], 401);
+                $token = $request->cookie('jwt_token');
             }
-
             // 3 Gán token vào JWTAuth trước khi authenticate
             JWTAuth::setToken($token);
             $user = JWTAuth::authenticate();
@@ -31,10 +29,11 @@ class JwtMiddleware
                 // 1 Nếu token hết hạn, tự động refresh
                 $newToken = JWTAuth::refresh($token);
                 JWTAuth::setToken($newToken)->authenticate();
-
+                // Set jwt_token (tồn tại 1 ngày) khi có refreshToken
+                $expire_time = time() + (1 * 24 * 60 * 60);
                 // 2 Gửi token mới trong cookie & header
                 return $next($request)
-                    ->withCookie(cookie('jwt_token', $newToken, 60, '/', null, true, true))
+                    ->withCookie(cookie('jwt_token', $newToken, $expire_time, '/', null, true, true))
                     ->header('Authorization', 'Bearer ' . $newToken);
 
             } catch (JWTException $e) {
