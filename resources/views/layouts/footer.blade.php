@@ -1,6 +1,9 @@
 <link rel="stylesheet" href="{{ asset(path: 'css/layouts/footer.css') }}?v={{ time() }}">
 <!-- link js trang chủ -->
 <script src="{{ asset('js/common.js') }}?v={{ time() }}" defer></script>
+<!-- kết nối với socket -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="{{ asset('js/websocket/socket.js') }}?v={{ time() }}" defer></script>
 <div id="loading">
     <div class="loading">
         <span class="loading-circle"></span>

@@ -1,0 +1,295 @@
+#messenger {
+    height: calc(100% - 62px);
+    width: 100%;
+    float: left;
+    background: #FFF;
+}
+
+.container-messenger {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 170px);
+    margin: auto;
+}
+
+/* SIDEBAR */
+
+.sidebar-messenger {
+    max-width: 350px;
+    width: 100%;
+    height: 100%;
+    float: left;
+    border-top: 1px solid #5d5d5d;
+    border-bottom: 1px solid #5d5d5d;
+    background: #FFF;
+}
+
+/* search */
+.sidebar-messenger__seach__box {
+    background: #f0f2f5;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.sidebar-messenger__seach {
+    padding: 10px;
+}
+
+.sidebar-messenger__seach__text {
+    width: calc(100% - 31px);
+}
+
+.sidebar-messenger__navigation {
+    padding: 10px;
+    justify-content: start;
+}
+
+.conversation-all,
+.conversation-unread {
+    padding: 5px 10px;
+    border-radius: 8px;
+    color: #1c2d5b;
+}
+
+.active-conversation__nav {
+    background: #1c2d5b;
+    color: #FFF;
+}
+
+.sidebar-messenger__body {
+    width: 100%;
+    height: calc(100% - 110px);
+    overflow: auto;
+    padding: 0px 10px;
+}
+
+.sidebar-messenger__box {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 10px;
+}
+
+.sidebar-messenger__head {
+    height: 110px;
+}
+
+.sidebar-messenger__list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.avatar-user {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.messenger__list {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+.messenger__list:hover {
+    transition: all 0.6s ease;
+    background: #1c2d5b;
+}
+
+.messenger__list:hover .messenger__user-name {
+    transition: all 0.6s ease;
+    color: #FFF;
+}
+
+.messenger__list:hover .messenger__user-time {
+    transition: all 0.6s ease;
+    color: #FFF;
+}
+
+.messenger__list:hover .messenger__user-content {
+    transition: all 0.6s ease;
+    color: #FFF;
+}
+
+.active_conv {
+    background: #1c2d5b;
+}
+
+.active_conv .messenger__user-name {
+    color: #FFF;
+}
+
+.active_conv .messenger__user-time {
+    color: #FFF;
+}
+
+.active_conv .messenger__user-content {
+    color: #FFF;
+}
+
+.sidebar-messenger__user {
+    width: calc(100% - 45px);
+    padding-bottom: 5px;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+/* MAIN */
+.main-messenger {
+    width: calc(100% - 350px);
+    height: 100%;
+}
+
+.main-messenger .main-messenger__conversation {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #5d5d5d;
+    height: 100%;
+}
+
+.main-messenger .conversation-more-action {
+    width: 60px;
+}
+
+.main-messenger .messenger__user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.main-messenger .messenger__user-name {
+    width: 84%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.main-messenger .messenger__user-time {
+    width: 15%;
+    text-align: right;
+}
+
+.main-messenger .avatarUserMain {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.main-messenger .main-messenger__conversation__head {
+    padding: 10px;
+    border-bottom: 1px solid #5d5d5d;
+}
+
+.main-messenger .main-messenger__conversation__setting {
+    background: unset;
+}
+
+.main-messenger .main-messenger__conversation__return {
+    display: none;
+    background: unset;
+    margin-right: 10px;
+}
+
+.main-messenger .buttonSendMessage {
+    background: unset;
+}
+
+.main-messenger .sendMessage {
+    width: calc(100% - 70px);
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: unset;
+    outline: none;
+}
+
+.main-messenger .conversation-main__action__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 50px;
+    background: #FFF;
+    border-radius: 15px;
+    resize: none;
+    padding: 10px;
+    box-shadow: 0px 0px 5px #d6d6d6;
+}
+
+.main-messenger .conversation-main__messenger {
+    height: calc(100% - 50px);
+    padding: 10px;
+}
+
+.conversation-body {
+    width: 100%;
+    height: 100%;
+}
+
+.main-messenger .conversation-main {
+    height: calc(100% - 71px);
+    padding-bottom: 20px;
+    background: #f7f7f7;
+}
+
+.main-messenger .conversation-main__action {
+    height: 50px;
+    padding: 0px 10px;
+    position: relative;
+    width: 100%;
+}
+
+.main-messenger .conversation-main__action__head {
+    position: absolute;
+    top: -175px;
+    background: #FFF;
+    height: 174px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    padding: 10px;
+    border-radius: 15px;
+    display: none;
+}
+
+.containerBoxFile {
+    width: calc(100% - 40px);
+    float: left;
+    display: flex;
+    gap: 5px;
+    height: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.BoxFileItem {
+    position: relative;
+}
+
+.FilePreview {
+    width: 80px;
+    height: 80px;
+}
+
+.iconDeleteFile {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+}
+
+.main-messenger .addMoreFile {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    width: 40px;
+    background: #aaa;
+    border-radius: 5px;
+    float: left;
+}
+
+/* END MAIN */
