@@ -34,11 +34,14 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\NewsDetailController;
 // page 404
 use App\Http\Controllers\ErrorController;
+// page messenger
+use App\Http\Controllers\MessengerController;
 // ==================Route===============================
 // 🚀 TRANG CHỦ & THÔNG TIN CHUNG
 Route::get('/', [HomeController::class, 'Home']);
 Route::get('/lien-he', [ContactController::class, 'index']);
 Route::get('/tin-tuc', [NewsController::class, 'index']);
+Route::get('/tro-chuyen', [MessengerController::class, 'index']);
 
 // 🚀 XÁC THỰC & TÀI KHOẢN
 Route::get('/dang-ky-tai-khoan', [RegisterController::class, 'index']);

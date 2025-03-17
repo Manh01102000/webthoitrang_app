@@ -13,6 +13,8 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ChangePasswordController;
 // Giỏ hàng
 use App\Http\Controllers\CartController;
+// Giỏ hàng
+use App\Http\Controllers\OrderController;
 // Xác nhận đơn hàng
 use App\Http\Controllers\ConfirmOrderController;
 // comment
@@ -46,17 +48,19 @@ Route::post('/getDistrictsByID', [ApiController::class, 'getDistrictsByID']);
 Route::post('/getCommunesByID', [ApiController::class, 'getCommunesByID']);
 // lấy danh mục sản phẩm id cha
 Route::post('/getCategoryByID', [ApiController::class, 'getCategoryByID']);
+// lấy user_id phục vụ check người dùng online
+Route::post('/get-user-id-online', [ApiController::class, 'getUserIdOnline']);
 // =====================Đánh giá sao sản phẩm==============================
 Route::group(['middleware' => ['auth.jwt']], function () {
     Route::post('/RatingProduct', [ProductDetailController::class, 'RatingProduct']);
 });
 // Middleware kiểm tra đăng nhập và kiểm tra token hợp lệ
-// =====================Giỏ hàng==============================
+// =====================Giỏ hàng + Đơn hàng ==============================
 Route::group(['middleware' => ['auth.jwt']], function () {
     Route::post('/AddToCart', [CartController::class, 'AddToCart']);
     Route::post('/updateCartCountBuy', [CartController::class, 'updateCartCountBuy']);
-    Route::post('/ConfirmOrder', [CartController::class, 'ConfirmOrder']);
-    Route::post('/ConfirmOrderBuyNow', [CartController::class, 'ConfirmOrderBuyNow']);
+    Route::post('/ConfirmOrder', [OrderController::class, 'ConfirmOrder']);
+    Route::post('/ConfirmOrderBuyNow', [OrderController::class, 'ConfirmOrderBuyNow']);
 });
 // =====================Xác nhận đơn hàng======================================
 Route::group(['middleware' => ['auth.jwt']], function () {
