@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\product;
 use Illuminate\Http\Request;
 // Model
+use App\Models\product;
 use App\Models\User;
 use App\Models\orders;
 use App\Models\order_details;
+// 
+use App\Repositories\ManagementOrder\ManagementOrderRepositoryInterface;
 
 class ManagementOrderController extends Controller
 {
+    protected $ManagementOrderRepository;
+    public function __construct(ManagementOrderRepositoryInterface $ManagementOrderRepository)
+    {
+        $this->ManagementOrderRepository = $ManagementOrderRepository;
+    }
     public function index()
     {
         /** === Khai báo thư viện sử dụng === */
@@ -42,74 +49,34 @@ class ManagementOrderController extends Controller
         $page = request()->get('page', 1);
         $limit = 10;
         $offset = ($page - 1) * $limit;
-
-        $orders = orders::where('orders.order_user_id', $user_id)
-            ->orderBy('orders.order_create_time', 'desc')
-            ->offset($offset)
-            ->limit($limit)
-            ->get()
-            ->toArray(); // Chuyển thành mảng
-
-        // Lấy danh sách chi tiết đơn hàng theo danh sách mã đơn hàng (chuyển về mảng)
-        $orderCodes = array_column($orders, 'order_code');
-        $orderDetails = order_details::whereIn('ordetail_order_code', $orderCodes)->get()->toArray();
-
-        // Lấy danh sách sản phẩm theo mã sản phẩm trong đơn hàng (chuyển về mảng)
-        $productCodes = array_unique(array_column($orderDetails, 'ordetail_product_code'));
-        $products = product::whereIn('product_code', $productCodes)->get()->toArray();
-
-        // Chuyển danh sách sản phẩm thành mảng key-value để dễ truy xuất
-        $productMap = [];
-        foreach ($products as $product) {
-            $productMap[$product['product_code']] = $product;
-        }
-
-        // Gán dữ liệu sản phẩm vào từng chi tiết đơn hàng
+        $response = $this->ManagementOrderRepository->getUserOrders($user_id, $page, $limit, $offset);
         $dataOrder = [];
-        foreach ($orders as $order) {
-            $orderDetailsList = [];
-            foreach ($orderDetails as $detail) {
-                if ($detail['ordetail_order_code'] == $order['order_code']) {
-                    $detail['product'] = $productMap[$detail['ordetail_product_code']] ?? null;
-                    $orderDetailsList[] = $detail;
-                }
-            }
-
-            $dataOrder[] = [
-                'order' => $order,
-                'details' => $orderDetailsList,
-            ];
+        if ($response['success']) {
+            $dataOrder = $response['data']['dataOrder'];
         }
-
         // Tổng số đơn hàng để hiển thị phân trang
+        $responseCount = $this->ManagementOrderRepository->getOrderStatistics($user_id);
         // Tổng toàn bộ đơn hàng
-        $CountOrderAll = orders::where('orders.order_user_id', '=', $user_id)->count();
+        $CountOrderAll = [];
         // Tổng số đơn hàng đang xử lý
-        $Count_OrderIsProcessing = orders::where([
-            ['orders.order_user_id', '=', $user_id],
-            ['orders.order_status', '=', 1],
-        ])->count();
+        $Count_OrderIsProcessing = [];
         // Tổng số đơn hàng đang giao
-        $Count_OrderIsBeingDelivered = orders::where([
-            ['orders.order_user_id', '=', $user_id],
-            ['orders.order_status', '=', 2],
-        ])->count();
+        $Count_OrderIsBeingDelivered = [];
         // Tổng số đơn hàng bị hủy
-        $Count_OrderHasBeenCancelled = orders::where([
-            ['orders.order_user_id', '=', $user_id],
-            ['orders.order_status', '=', 3],
-        ])->count();
+        $Count_OrderHasBeenCancelled = [];
         // Tổng số đơn hàng đã giao
-        $Count_OrderHasBeenDelivered = orders::where([
-            ['orders.order_user_id', '=', $user_id],
-            ['orders.order_status', '=', 4],
-        ])->count();
+        $Count_OrderHasBeenDelivered = [];
         // Tổng số đơn hàng hoàn tất
-        $Count_OrderCompleted = orders::where([
-            ['orders.order_user_id', '=', $user_id],
-            ['orders.order_status', '=', 5],
-        ])->count();
-
+        $Count_OrderCompleted = [];
+        if ($responseCount['success']) {
+            $dataOrder = $responseCount['data'];
+            $CountOrderAll = $dataOrder['CountOrderAll'];
+            $Count_OrderIsProcessing = $dataOrder['Count_OrderIsProcessing'];
+            $Count_OrderIsBeingDelivered = $dataOrder['Count_OrderIsBeingDelivered'];
+            $Count_OrderHasBeenCancelled = $dataOrder['Count_OrderHasBeenCancelled'];
+            $Count_OrderHasBeenDelivered = $dataOrder['Count_OrderHasBeenDelivered'];
+            $Count_OrderCompleted = $dataOrder['Count_OrderCompleted'];
+        }
         /** === Chuẩn bị mảng dữ liệu trả về view === */
         $categoryTree = getCategoryTree();
         $dataAll = [
@@ -146,38 +113,16 @@ class ManagementOrderController extends Controller
             if (!$ordercode || !$status) {
                 return apiResponse("error", "Thiếu ID sản phẩm hoặc đánh giá", [], false, 400);
             }
-
-            $order = orders::where("order_code", $ordercode)->first();
-            if (!$order) {
-                return apiResponse("error", "Không tìm thấy đơn hàng", [], false, 500);
+            $data = [
+                'ordercode' => $ordercode,
+                'status' => $status,
+            ];
+            $response = $this->ManagementOrderRepository->ChangeStatusOrder($data);
+            if ($response['success']) {
+                return apiResponse('success', $response['message'], $response['data'], true, $response['httpCode']);
+            } else {
+                return apiResponse('error', $response['message'], $response['data'], false, $response['httpCode']);
             }
-            if ($status == 1) {
-                //Luồng thông báo cho admin để admin xác nhận đơn hàng
-
-                // Cập nhật trạng thái đơn hàng
-                $order->update([
-                    'order_status' => $status,
-                    'order_update_time' => time(),
-                ]);
-                return apiResponse("success", "Xác nhận đơn hàng thành công", [], false, 500);
-            }
-
-            if ($status == 2) {
-                //Luồng thông báo cho người dùng đơn hàng đang giao
-                $order->update([
-
-                ]);
-                return apiResponse("success", "Hủy đơn hàng thành công", [], false, 500);
-            }
-
-            if ($status == 3) {
-                //Luồng thông báo cho người dùng đơn hàng đã hủy và 
-                $order->update([
-
-                ]);
-                return apiResponse("success", "Hủy đơn hàng thành công", [], false, 500);
-            }
-
         } catch (\Exception $e) {
             return apiResponse("error", "Lỗi server: " . $e->getMessage(), [], false, 500);
         }

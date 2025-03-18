@@ -25,6 +25,18 @@ use App\Repositories\ChangePassword\ChangePasswordRepositoryInterface;
 // Comment
 use App\Repositories\Comment\CommentRepository;
 use App\Repositories\Comment\CommentRepositoryInterface;
+// ComfirmOrder
+use App\Repositories\ComfirmOrder\ConfirmOrderRepository;
+use App\Repositories\ComfirmOrder\ConfirmOrderRepositoryInterface;
+// Login
+use App\Repositories\Login\LoginRepository;
+use App\Repositories\Login\LoginRepositoryInterface;
+// ManagementOrder
+use App\Repositories\ManagementOrder\ManagementOrderRepository;
+use App\Repositories\ManagementOrder\ManagementOrderRepositoryInterface;
+// ManagerAccount
+use App\Repositories\ManagerAccount\ManagerAccountRepository;
+use App\Repositories\ManagerAccount\ManagerAccountRepositoryInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -57,6 +69,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ChangePasswordRepositoryInterface::class, ChangePasswordRepository::class);
         // Comment
         $this->app->bind(CommentRepositoryInterface::class, CommentRepository::class);
+        // ComfirmOrder
+        $this->app->bind(ConfirmOrderRepositoryInterface::class, ConfirmOrderRepository::class);
+        // Login
+        $this->app->bind(LoginRepositoryInterface::class, LoginRepository::class);
+        // ManagementOrder
+        $this->app->bind(ManagementOrderRepositoryInterface::class, ManagementOrderRepository::class);
+        // ManagerAccount
+        $this->app->bind(ManagerAccountRepositoryInterface::class, ManagerAccountRepository::class);
     }
 
     /**

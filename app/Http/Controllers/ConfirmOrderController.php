@@ -22,9 +22,16 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 // COOKIE
 use Illuminate\Support\Facades\Cookie;
+// 
+use App\Repositories\ComfirmOrder\ConfirmOrderRepositoryInterface;
 
 class ConfirmOrderController extends Controller
 {
+    protected $ConfirmOrderRepository;
+    public function __construct(ConfirmOrderRepositoryInterface $ConfirmOrderRepository)
+    {
+        $this->ConfirmOrderRepository = $ConfirmOrderRepository;
+    }
     public function index()
     {
         /** === Khai báo thư viện sử dụng === */
@@ -173,15 +180,24 @@ class ConfirmOrderController extends Controller
                 return apiResponse("error", "Dữ liệu không hợp lệ", $validator->errors(), false, 422);
             }
 
-            // Lưu dữ liệu vào DB
-            address_order::create(
-                $validator->validated() + [
-                    'address_orders_default' => 0,
-                    'address_orders_user_id' => $user_id
-                ]
-            );
-
-            return apiResponse("success", "Thêm thông tin vận chuyển thành công", [], true, 200);
+            $data = [
+                'address_orders_user_name' => $validator->validated()['address_orders_user_name'],
+                'address_orders_user_phone' => $validator->validated()['address_orders_user_phone'],
+                'address_orders_user_email' => $validator->validated()['address_orders_user_email'],
+                'address_orders_city' => $validator->validated()['address_orders_city'],
+                'address_orders_district' => $validator->validated()['address_orders_district'],
+                'address_orders_commune' => $validator->validated()['address_orders_commune'],
+                'address_orders_detail' => $validator->validated()['address_orders_detail'],
+                'address_orders_default' => 0,
+                'address_orders_user_id' => $user_id
+            ];
+            /** === Lấy dữ liệu từ repository === */
+            $response = $this->ConfirmOrderRepository->AddDataInforship($data);
+            if ($response['success']) {
+                return apiResponse('success', $response['message'], $response['data'], true, $response['httpCode']);
+            } else {
+                return apiResponse('error', $response['message'], $response['data'], false, $response['httpCode']);
+            }
         } catch (\Exception $e) {
             \Log::error("Lỗi khi thêm thông tin vận chuyển: " . $e->getMessage());
             return apiResponse("error", "Lỗi server, vui lòng thử lại sau.", [], false, 500);
@@ -204,16 +220,18 @@ class ConfirmOrderController extends Controller
             if ($address_orders_id == 0) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 403);
             }
-            // Lưu dữ liệu vào DB
-            // Đặt tất cả địa chỉ của user này về 0 trước
-            address_order::where('address_orders_user_id', $user_id)
-                ->update(['address_orders_default' => 0]);
-
-            // Cập nhật địa chỉ được chọn thành mặc định (1)
-            address_order::where('address_orders_id', $address_orders_id)
-                ->update(['address_orders_default' => 1]);
-
-            return apiResponse("success", "Cập nhật địa chỉ mặc định thành công", [], true, 200);
+            $data = [
+                'user_id' => $user_id,
+                'userType' => $userType,
+                'address_orders_id' => $address_orders_id,
+            ];
+            /** === Lấy dữ liệu từ repository === */
+            $response = $this->ConfirmOrderRepository->SetShipDefalt($data);
+            if ($response['success']) {
+                return apiResponse('success', $response['message'], $response['data'], true, $response['httpCode']);
+            } else {
+                return apiResponse('error', $response['message'], $response['data'], false, $response['httpCode']);
+            }
         } catch (\Exception $e) {
             \Log::error("Lỗi khi Cập nhật địa chỉ mặc định: " . $e->getMessage());
             return apiResponse("error", "Lỗi server, vui lòng thử lại sau.", [], false, 500);
@@ -232,6 +250,7 @@ class ConfirmOrderController extends Controller
             $userType = $user->use_role;
             // Tạo validator
             $arr_cart_id = $request->get('arr_cart_id', []);
+            $payment_note = $request->get('payment_note', '');
             $validator = Validator::make($request->all(), [
                 "order_code" => 'required',
                 "address_orders_user_name" => 'required',
@@ -259,65 +278,38 @@ class ConfirmOrderController extends Controller
                 return apiResponse("error", "Dữ liệu không hợp lệ", $validator->errors(), false, 422);
             }
 
-            $arr_product_code = explode(',', $validator->validated()['arr_product_code']);
-            $arr_product_amount = explode(',', $validator->validated()['arr_product_amount']);
-            $arr_product_classification = explode(',', $validator->validated()['arr_product_classification']);
-            $arr_product_totalprice = explode(',', $validator->validated()['arr_product_totalprice']);
-            $arr_product_feeship = explode(',', $validator->validated()['arr_product_feeship']);
-            $arr_product_unitprice = explode(',', $validator->validated()['arr_product_unitprice']);
-
-            $array_insert = [];
-            foreach ($arr_product_code as $key => $value) {
-                $array_insert[] = [
-                    'ordetail_order_code' => $validator->validated()['order_code'],
-                    'ordetail_product_code' => $value,
-                    'ordetail_product_amount' => $arr_product_amount[$key],
-                    'ordetail_product_classification' => $arr_product_classification[$key],
-                    'ordetail_product_totalprice' => $arr_product_totalprice[$key],
-                    'ordetail_product_unitprice' => $arr_product_unitprice[$key],
-                    'ordetail_product_feeship' => $arr_product_feeship[$key],
-                    'ordetail_created_at' => time(),
-                    'ordetail_updated_at' => time(),
-                ];
+            $data = [
+                "user_id" => $user_id,
+                "userType" => $userType,
+                "arr_cart_id" => $arr_cart_id,
+                "payment_note" => $payment_note,
+                "order_code" => $validator->validated()['order_code'],
+                "address_orders_user_name" => $validator->validated()['address_orders_user_name'],
+                "address_orders_detail" => $validator->validated()['address_orders_detail'],
+                "address_orders_user_phone" => $validator->validated()['address_orders_user_phone'],
+                "address_orders_user_email" => $validator->validated()['address_orders_user_email'],
+                "arr_confirm_id" => $validator->validated()['arr_confirm_id'],
+                "arr_product_code" => $validator->validated()['arr_product_code'],
+                "arr_product_amount" => $validator->validated()['arr_product_amount'],
+                "arr_product_classification" => $validator->validated()['arr_product_classification'],
+                "arr_product_totalprice" => $validator->validated()['arr_product_totalprice'],
+                "arr_product_feeship" => $validator->validated()['arr_product_feeship'],
+                "arr_product_unitprice" => $validator->validated()['arr_product_unitprice'],
+                "total_all_payment" => $validator->validated()['total_all_payment'],
+                "payment_type" => $validator->validated()['payment_type'],
+                "account_number" => $validator->validated()['account_number'],
+                "bank_name" => $validator->validated()['bank_name'],
+                "account_owner" => $validator->validated()['account_owner'],
+                "bank_branch" => $validator->validated()['bank_branch'],
+                "bank_content_tranfer" => $validator->validated()['bank_content_tranfer'],
+            ];
+            /** === Lấy dữ liệu từ repository === */
+            $response = $this->ConfirmOrderRepository->PayMent($data);
+            if ($response['success']) {
+                return apiResponse('success', $response['message'], $response['data'], true, $response['httpCode']);
+            } else {
+                return apiResponse('error', $response['message'], $response['data'], false, $response['httpCode']);
             }
-
-            // DB::transaction
-            // ✅ Đảm bảo tính toàn vẹn dữ liệu
-            // ✅ Nếu có lỗi xảy ra, tất cả thay đổi sẽ bị rollback (hủy bỏ), không bị mất dữ liệu
-            // ✅ Tránh trường hợp giỏ hàng bị xóa trước khi đơn hàng được tạo thành công
-            DB::transaction(function () use ($validator, $user_id, $arr_cart_id, $array_insert) {
-                // Lưu dữ liệu bảng đơn hàng
-                orders::create([
-                    'order_code' => $validator->validated()['order_code'],
-                    'order_user_id' => $user_id,
-                    'order_user_phone' => $validator->validated()['address_orders_user_phone'],
-                    'order_user_email' => $validator->validated()['address_orders_user_email'],
-                    'order_address_ship' => $validator->validated()['address_orders_detail'],
-                    'order_total_price' => $validator->validated()['total_all_payment'],
-                    'order_create_time' => time(),
-                    'order_update_time' => time(),
-                    'order_paymentMethod' => $validator->validated()['payment_type'],
-                    'order_name_bank' => $validator->validated()['bank_name'],
-                    'order_branch_bank' => $validator->validated()['bank_branch'],
-                    'order_account_bank' => $validator->validated()['account_number'],
-                    'order_account_holder' => $validator->validated()['account_owner'],
-                    'order_content_bank' => $validator->validated()['bank_content_tranfer'],
-                    'order_user_note' => request()->get('payment_note'),
-                ]);
-                // Lưu dữ liệu bảng chi tiết đơn hàng
-                order_details::insert($array_insert);
-                // Xóa giỏ hàng
-                if (!empty($arr_cart_id)) {
-                    $arr_cart_id = explode(',', $validator->validated()['arr_cart_id']);
-                    cart::whereIn('cart_id', $arr_cart_id)->delete();
-                }
-                // Xóa xác nhận đơn hàng
-                if (!empty($validator->validated()['arr_confirm_id'])) {
-                    $arr_confirm_id = explode(',', $validator->validated()['arr_confirm_id']);
-                    order_confirm::whereIn('order_confirm_id', $arr_confirm_id)->delete();
-                }
-            });
-            return apiResponse("success", "Đặt hàng thành công", [], true, 200);
         } catch (\Exception $e) {
             \Log::error("Lỗi khi đặt hàng: " . $e->getMessage());
             return apiResponse("error", "Lỗi server, vui lòng thử lại sau.", [], false, 500);

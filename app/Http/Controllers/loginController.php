@@ -13,9 +13,17 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 // Model
 use App\Models\User;
+// 
+use App\Repositories\Login\LoginRepositoryInterface;
 
 class LoginController extends Controller
 {
+    protected $LoginRepository;
+    public function __construct(LoginRepositoryInterface $LoginRepository)
+    {
+        $this->LoginRepository = $LoginRepository;
+    }
+
     public function index()
     {
         /** === Khai báo thư viện sử dụng === */
@@ -59,18 +67,14 @@ class LoginController extends Controller
         try {
             $emp_account = $request->get('emp_account');
             $emp_password = $request->get('emp_password');
-
             // Kiểm tra dữ liệu đầu vào
             if (empty($emp_account) || empty($emp_password)) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
             }
-            // Kiểm tra thông tin đăng nhập
-            $user = User::where('use_email_account', $emp_account)->first();
-            if (!$user || !Hash::check($emp_password, $user->password)) {
-                return apiResponse("error", "Tài khoản hoặc mật khẩu không chính xác", [], false, 401);
-            }
-            if ($user) { // Kiểm tra xem Collection có rỗng không
-
+            /** === Lấy dữ liệu từ repository === */
+            $response = $this->LoginRepository->login($emp_account, $emp_password);
+            if ($response['success']) {
+                $user = $response['data']['user'];
                 $cookie_last_id = $user->use_id;  // Lấy ID của user
                 $cookie_password = $user->password;  // Lấy mật khẩu đã mã hóa
                 $cookie_ut = 1; // Giá trị tùy chỉnh của bạn
@@ -96,15 +100,14 @@ class LoginController extends Controller
                         'token' => $token,
                     ];
                     // Trả về dữ liệu kèm cookie
-                    return apiResponseWithCookie("success", "Đăng nhập tài khoản thành công", $data_mess, 'jwt_token', $token, $expire_time, true, 200);
+                    return apiResponseWithCookie("success", $response['message'], $data_mess, 'jwt_token', $token, $expire_time, true, $response['httpCode']);
                 } catch (JWTException $e) {
                     // Lỗi tạo token
                     return apiResponse("error", "Không thể tạo token, lỗi: " . $e->getMessage(), [], false, 500);
                 }
             } else {
-                return apiResponse("error", "Tài khoản hoặc mật khẩu không chính xác", [], false, 500);
+                return apiResponse('error', $response['message'], $response['data'], false, $response['httpCode']);
             }
-
         } catch (\Exception $e) {
             // Xử lý lỗi bất ngờ
             return response()->json([
