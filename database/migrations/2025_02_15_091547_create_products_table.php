@@ -37,6 +37,8 @@ class CreateProductsTable extends Migration
             $table->string('product_brand')->nullable();
             // Giá bán
             $table->text('product_price')->nullable();
+            // Hoa hồng sản phẩm khi bán được cho affilate
+            $table->decimal('product_commission_rate', 5, 2)->default(0.00);
             // Các kích cỡ có sẵn
             $table->text('product_sizes')->nullable();
             // Số lượng tồn kho

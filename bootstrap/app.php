@@ -37,6 +37,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'notfound' => \App\Http\Middleware\HandleNotFound::class,
             // jwt.auth: Middleware kiểm tra token hợp lệ.
             'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class,
+            // đăng ký middleware check affiliate
+            \App\Http\Middleware\TrackAffiliate::class,
         ]);
     })
 

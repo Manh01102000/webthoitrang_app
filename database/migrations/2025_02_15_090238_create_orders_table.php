@@ -17,6 +17,8 @@ class CreateOrdersTable extends Migration
             $table->string('order_code')->nullable();
             // id người mua
             $table->integer('order_user_id')->default('0');
+            // Liên kết với bảng affiliates
+            $table->foreignId('order_affiliate_id')->references('affiliate_id')->on('affiliates');
             // Số điện thoại người mua
             $table->string('order_user_phone')->nullable();
             // Email người mua

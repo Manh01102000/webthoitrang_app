@@ -28,6 +28,8 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProductFavoriteController;
 // quản lý đơn hàng
 use App\Http\Controllers\ManagementOrderController;
+// Tiếp thị liên kết
+use App\Http\Controllers\AffiliateController;
 // Chi tiết sản phẩm
 use App\Http\Controllers\ProductDetailController;
 // Chi tiết tin tức
@@ -36,6 +38,7 @@ use App\Http\Controllers\NewsDetailController;
 use App\Http\Controllers\ErrorController;
 // page messenger
 use App\Http\Controllers\MessengerController;
+
 // ==================Route===============================
 // 🚀 TRANG CHỦ & THÔNG TIN CHUNG
 Route::get('/', [HomeController::class, 'Home']);
@@ -62,7 +65,8 @@ Route::middleware('notfound')->group(function () {
     Route::get('/san-pham/{slug}-{id}', [ProductDetailController::class, 'index'])
         ->where(['id' => '[0-9]+', 'slug' => '[a-zA-Z0-9-]+']);
 });
-
+// 🚀 Tiếp thị liên kết
+Route::get('/tiep-thi-lien-ket', [AffiliateController::class, 'index']);
 // 🚀 BÀI VIẾT / TIN TỨC
 Route::middleware('notfound')->group(function () {
     Route::get('/bai-viet/{id}', [NewsDetailController::class, 'index'])->where('id', '[0-9]+');

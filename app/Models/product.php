@@ -24,6 +24,7 @@ class product extends Model
         'category_children_code',
         'product_brand',
         'product_price',
+        'product_commission_rate',
         'product_sizes',
         'product_stock',
         'product_classification',

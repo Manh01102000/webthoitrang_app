@@ -1,0 +1,147 @@
+.container-page {
+    width: 100%;
+    display: flex;
+    min-height: 400px;
+    justify-content: center;
+    align-items: start;
+    background: #FFF;
+    border-top: 1px solid #ccc;
+}
+
+.container-general-allpage {
+    width: 100%;
+    max-width: 1300px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.section-affiliate {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+}
+
+.affiliate {
+    width: 100%;
+    float: left;
+}
+
+.affiliate-wrapper {
+    width: 100%;
+    padding: 20px;
+    float: left;
+}
+
+/* Phần tiêu đề */
+.affiliate-header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.affiliate-title {
+    color: #000;
+}
+
+/* Trạng thái affiliate */
+.affiliate-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.affiliate-status-label {
+    font-weight: 600;
+}
+
+.affiliate-status-value {
+    font-weight: 500;
+    color: green;
+}
+
+.affiliate-error {
+    color: red;
+}
+
+/* Phần giấy phép */
+.affiliate-license {
+    border-radius: 6px;
+}
+
+.affiliate-license-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #23527c;
+}
+
+.affiliate-text {
+    font-size: 13px;
+    line-height: 18px;
+    color: #000;
+    margin-top: 8px;
+    float: left;
+    width: 100%;
+    display: flex;
+}
+
+.contract-section {
+    margin-bottom: 20px;
+    float: left;
+    width: 100%;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.signature {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    width: 100%;
+    float: left;
+}
+
+.contract-container {
+    width: 100%;
+    float: left;
+}
+
+/* Nút hành động */
+.affiliate-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+    width: 100%;
+    float: left;
+}
+
+.affiliate-cancel {
+    background: #d9534f;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.affiliate-update {
+    background: #5cb85c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.affiliate-cancel:hover {
+    background: #c9302c;
+}
+
+.affiliate-update:hover {
+    background: #4cae4c;
+}

@@ -37,6 +37,9 @@ use App\Repositories\ManagementOrder\ManagementOrderRepositoryInterface;
 // ManagerAccount
 use App\Repositories\ManagerAccount\ManagerAccountRepository;
 use App\Repositories\ManagerAccount\ManagerAccountRepositoryInterface;
+// AFFILIATE
+use App\Repositories\Affiliate\AffiliateRepository;
+use App\Repositories\Affiliate\AffiliateRepositoryInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -77,6 +80,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ManagementOrderRepositoryInterface::class, ManagementOrderRepository::class);
         // ManagerAccount
         $this->app->bind(ManagerAccountRepositoryInterface::class, ManagerAccountRepository::class);
+        // Affiliate
+        $this->app->bind(AffiliateRepositoryInterface::class, AffiliateRepository::class);
     }
 
     /**
