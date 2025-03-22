@@ -57,25 +57,24 @@ class ManagementOrderController extends Controller
         // Tổng số đơn hàng để hiển thị phân trang
         $responseCount = $this->ManagementOrderRepository->getOrderStatistics($user_id);
         // Tổng toàn bộ đơn hàng
-        $CountOrderAll = [];
+        $CountOrderAll = 0;
         // Tổng số đơn hàng đang xử lý
-        $Count_OrderIsProcessing = [];
+        $Count_OrderIsProcessing = 0;
         // Tổng số đơn hàng đang giao
-        $Count_OrderIsBeingDelivered = [];
+        $Count_OrderIsBeingDelivered = 0;
         // Tổng số đơn hàng bị hủy
-        $Count_OrderHasBeenCancelled = [];
+        $Count_OrderHasBeenCancelled = 0;
         // Tổng số đơn hàng đã giao
-        $Count_OrderHasBeenDelivered = [];
+        $Count_OrderHasBeenDelivered = 0;
         // Tổng số đơn hàng hoàn tất
-        $Count_OrderCompleted = [];
+        $Count_OrderCompleted = 0;
         if ($responseCount['success']) {
-            $dataOrder = $responseCount['data'];
-            $CountOrderAll = $dataOrder['CountOrderAll'];
-            $Count_OrderIsProcessing = $dataOrder['Count_OrderIsProcessing'];
-            $Count_OrderIsBeingDelivered = $dataOrder['Count_OrderIsBeingDelivered'];
-            $Count_OrderHasBeenCancelled = $dataOrder['Count_OrderHasBeenCancelled'];
-            $Count_OrderHasBeenDelivered = $dataOrder['Count_OrderHasBeenDelivered'];
-            $Count_OrderCompleted = $dataOrder['Count_OrderCompleted'];
+            $CountOrderAll = $responseCount['data']['CountOrderAll'];
+            $Count_OrderIsProcessing = $responseCount['data']['Count_OrderIsProcessing'];
+            $Count_OrderIsBeingDelivered = $responseCount['data']['Count_OrderIsBeingDelivered'];
+            $Count_OrderHasBeenCancelled = $responseCount['data']['Count_OrderHasBeenCancelled'];
+            $Count_OrderHasBeenDelivered = $responseCount['data']['Count_OrderHasBeenDelivered'];
+            $Count_OrderCompleted = $responseCount['data']['Count_OrderCompleted'];
         }
         /** === Chuẩn bị mảng dữ liệu trả về view === */
         $categoryTree = getCategoryTree();
