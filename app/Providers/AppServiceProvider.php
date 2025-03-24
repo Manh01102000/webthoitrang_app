@@ -40,6 +40,9 @@ use App\Repositories\ManagerAccount\ManagerAccountRepositoryInterface;
 // AFFILIATE
 use App\Repositories\Affiliate\AffiliateRepository;
 use App\Repositories\Affiliate\AffiliateRepositoryInterface;
+// AFFILIATE Contract
+use App\Repositories\AffiliateContract\AffiliateContractRepository;
+use App\Repositories\AffiliateContract\AffiliateContractRepositoryInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -82,6 +85,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ManagerAccountRepositoryInterface::class, ManagerAccountRepository::class);
         // Affiliate
         $this->app->bind(AffiliateRepositoryInterface::class, AffiliateRepository::class);
+        // Affiliate contract
+        $this->app->bind(AffiliateContractRepositoryInterface::class, AffiliateContractRepository::class);
     }
 
     /**

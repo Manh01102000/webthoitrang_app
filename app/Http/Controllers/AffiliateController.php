@@ -44,12 +44,45 @@ class AffiliateController extends Controller
         /** === Chuẩn bị dữ liệu === */
         $data = InForAccount();
         $user_id = $data['data']['us_id'];
+        // getData
+        $DBAffiliate = $this->AffiliateRepository->getData($user_id);
+        $dataAffiliate = [
+            'contracts_id' => 0,
+            'companyName' => 'Fashion House',
+            'partnerName' => $data['data']['us_name'],
+            'company_sign_name' => 'Fashion House',
+            'partner_sign_name' => $data['data']['us_name'],
+            'companySignDate' => date('d-m-Y', time()),
+            'partnerSignDate' => date('d-m-Y', time()),
+            'TerminateDateMin' => 30,
+            'paymentDate' => 10,
+            'paymentMethod' => 'bank,momo,vnpay',
+            'paymentMinimum' => 1000000,
+        ];
+        if (!empty($DBAffiliate['data'])) {
+            $dataAffiliate = [
+                'contracts_id' => $DBAffiliate['data']->contracts_id,
+                'affiliate_id' => $DBAffiliate['data']->affiliate_id,
+                'companyName' => $DBAffiliate['data']->contract_company_name,
+                'partnerName' => $DBAffiliate['data']->contract_partner_name,
+                'company_sign_name' => $DBAffiliate['data']->company_sign_name,
+                'partner_sign_name' => $DBAffiliate['data']->partner_sign_name,
+                'companySignDate' => date('d-m-Y', $DBAffiliate['data']->company_sign_date),
+                'partnerSignDate' => date('d-m-Y', $DBAffiliate['data']->partner_sign_date),
+                'TerminateDateMin' => $DBAffiliate['data']->terminate_date_min,
+                'paymentDate' => $DBAffiliate['data']->contract_payment_date,
+                'paymentMethod' => $DBAffiliate['data']->contract_payment_method,
+                'paymentMinimum' => $DBAffiliate['data']->contract_payment_minimum,
+            ];
+        }
+
         /** === Chuẩn bị mảng dữ liệu trả về view === */
         $categoryTree = getCategoryTree();
         $dataAll = [
             'data' => $data,
             'breadcrumbItems' => $breadcrumbItems,
             'Category' => $categoryTree,
+            'dataAffiliate' => $dataAffiliate,
         ];
 
         /** === Debug kiểm tra dữ liệu === */
