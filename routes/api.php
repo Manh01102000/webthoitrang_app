@@ -23,6 +23,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProductDetailController;
 //Quản lý đơn hàng
 use App\Http\Controllers\ManagementOrderController;
+//Hợp đồng tiếp thị liên kết
+use App\Http\Controllers\AffiliateContracts;
 // ========================AJAX================================
 // API kiểm tra tài khoản tồn tại
 Route::post('/check_account_register', [RegisterController::class, 'CheckAccountRegister']);
@@ -95,8 +97,11 @@ Route::group(['middleware' => ['auth.jwt']], function () {
 });
 Route::post('/load-more-comment', [CommentController::class, 'LoadMoreComment']);
 Route::post('/load-more-replies', [CommentController::class, 'LoadMoreReplies']);
+// =================API luồng Tiếp thị liên kết==============================
+Route::group(['middleware' => ['auth.jwt']], function () {
+    Route::post('/save-contract', [AffiliateContracts::class, 'create']);
+    Route::post('/cancel-contract', [AffiliateContracts::class, 'delete']);
+});
 // API debug token
 Route::post('/debugToken', [LoginController::class, 'debugToken']);
-
-
 // ==========================================

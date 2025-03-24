@@ -1,7 +1,7 @@
 // Kết nối WebSocket (Thêm log khi lỗi)
 const socket = io("http://localhost:5000", { //Kết nối tới server WebSocket đang chạy ở cổng 5000.
     reconnection: true, // Tự động kết nối lại nếu mất kết nối
-    reconnectionAttempts: 5, // Số lần thử lại
+    reconnectionAttempts: 2, // Số lần thử lại
     timeout: 5000 // Thời gian timeout
 });
 

@@ -17,7 +17,7 @@ class CreateAffiliatesTable extends Migration
             // Mã giới thiệu
             $table->string('affiliate_code')->nullable();
             // % hoa hồng (sử dụng DECIMAL để hỗ trợ số thập phân)
-            $table->decimal('affiliate_commission_rate', 5, 2)->default(5.00);
+            $table->decimal('affiliate_commission_rate', 5, 2)->default(0.00);
             // Tổng tiền hoa hồng kiếm được từ trước đến nay (dùng DECIMAL để tránh làm tròn)
             $table->decimal('affiliate_total_earnings', 15, 2)->default(0.00);
             // Số tiền có thể rút (Tổng hoa hồng - tiền đã rút)

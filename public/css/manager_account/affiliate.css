@@ -145,3 +145,7 @@
 .affiliate-update:hover {
     background: #4cae4c;
 }
+
+.button-disabled {
+    cursor: not-allowed;
+}
