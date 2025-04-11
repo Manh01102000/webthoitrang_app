@@ -138,7 +138,7 @@ class CommentController extends Controller
     }
 
     // Luồng thêm bình luận
-    public function DeleteComment(Request $request)
+    public function DeleteComment(Request $request, $comment_id)
     {
         try {
             // 🟢 ======= Lấy thông tin người dùng từ request =======
@@ -148,8 +148,6 @@ class CommentController extends Controller
             }
             $user_id = $user->use_id;
             $userType = $user->use_role;
-            // Nhận dữ liệu từ request
-            $comment_id = $request->get('comment_id', 0);
 
             if (!$comment_id) {
                 return apiResponse("error", "Thiếu dữ liệu truyền lên", [], false, 400);
@@ -159,6 +157,7 @@ class CommentController extends Controller
                 'userType' => $userType,
                 'comment_id' => $comment_id,
             ];
+            // var_dump($data);
             /** === Lấy dữ liệu từ repository === */
             $response = $this->CommentRepository->DeleteComment($data);
             if ($response['success']) {
@@ -201,6 +200,8 @@ class CommentController extends Controller
                 'offset' => $offset,
                 'limit' => $limit,
             ];
+            // var_dump($data);
+            // die;
             /** === Lấy dữ liệu từ repository === */
             $response = $this->CommentRepository->LoadMoreComment($data);
             if ($response['success']) {
@@ -214,7 +215,7 @@ class CommentController extends Controller
     }
 
     //Load thêm bình luận 
-    public function LoadMoreReplies(Request $request)
+    public function LoadMoreReplies(Request $request, $id)
     {
         try {
             // ======= Lấy thông tin người dùng từ cookie & giải mã =======
@@ -226,21 +227,22 @@ class CommentController extends Controller
                 $user_id = decryptData($UID_ENCRYPT, $key);
             }
             // ======= END Lấy thông tin người dùng từ cookie & giải mã =======
-            $parentCommentId = $request->get('comment_id');
             $page = $request->get('page', 1);
             $limit = 5;
             $offset = ($page - 1) * $limit;
 
-            if (!$parentCommentId) {
+            if (!$id) {
                 return apiResponse("error", "Thiếu ID bình luận", [], false, 400);
             }
+
             $data = [
-                'parentCommentId' => $parentCommentId,
+                'parentCommentId' => $id,
                 'user_id' => $user_id,
                 'page' => $page,
                 'offset' => $offset,
                 'limit' => $limit,
             ];
+            // var_dump($data);die;
             /** === Lấy dữ liệu từ repository === */
             $response = $this->CommentRepository->LoadMoreReplies($data);
             if ($response['success']) {

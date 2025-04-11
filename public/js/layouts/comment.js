@@ -82,7 +82,7 @@ function SubmitEmoji(e) {
     if (dataemoji && data_id && data_type) {
         $.ajax({
             type: "POST",
-            url: "/api/SubmitEmoji",
+            url: `/api/comment/${data_id}/emoji`,
             data: {
                 data_id,
                 data_type,
@@ -176,7 +176,7 @@ function AddComment(e) {
         if (data_parents_id) formData.append('data_parents_id', data_parents_id); // Chỉ thêm nếu có ảnh
         $.ajax({
             type: "POST",
-            url: "/api/AddComment",
+            url: "/api/comment",
             data: formData,
             dataType: "JSON",
             processData: false,
@@ -250,9 +250,9 @@ function commentHtmlLoadMore(commentData, user_id) {
 function loadMoreComment(product_id, e) {
     let page = $(e).attr('data-page') ? parseInt($(e).attr('data-page')) : 1;
     $.ajax({
-        url: '/api/load-more-comment',
-        method: 'POST',
-        data: { product_id: product_id, page: page },
+        url: `/api/comment?product_id=${product_id}&page=${page}`,
+        method: 'GET',
+        data: {},
         success: function (response) {
             if (response.status === "success" && response.data.comments.length > 0) {
                 let html = "";
@@ -314,9 +314,9 @@ function commentHtmlLoadMoreReplies(commentData, data_parents_id, user_id) {
 function loadMoreReplies(commentId, buttonElement) {
     let page = $(buttonElement).attr('data-page') ? parseInt($(buttonElement).attr('data-page')) : 1;
     $.ajax({
-        url: '/api/load-more-replies',
-        method: 'POST',
-        data: { comment_id: commentId, page: page },
+        url: `/api/comment/${commentId}/replies?page=${page}`,
+        method: 'GET',
+        data: {},
         success: function (response) {
             if (response.status === "success" && response.data.comments.length > 0) {
                 let user_id = response.data.user_id;
@@ -342,9 +342,9 @@ function DeleteComment(e) {
     }
     if (confirm("Bạn có chắc muốn xóa bình luận này?")) {
         $.ajax({
-            url: '/api/DeleteComment',
-            method: 'POST',
-            data: { comment_id: comment_id },
+            url: `/api/comment/${comment_id}`,
+            method: 'DELETE',
+            data: {},
             success: function (response) {
                 if (response && response.result) {
                     alert(response.message);

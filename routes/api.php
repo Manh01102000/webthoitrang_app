@@ -90,13 +90,26 @@ Route::group(['middleware' => ['auth.jwt']], function () {
 });
 // =================API luồng bình luận==============================
 // Middleware kiểm tra đăng nhập và kiểm tra token hợp lệ
-Route::group(['middleware' => ['auth.jwt']], function () {
-    Route::post('/SubmitEmoji', [CommentController::class, 'SubmitEmoji']);
-    Route::post('/AddComment', [CommentController::class, 'AddComment']);
-    Route::post('/DeleteComment', [CommentController::class, 'DeleteComment']);
+Route::prefix('comment')->group(function () {
+    // Lấy comment
+    Route::get('/', [CommentController::class, 'LoadMoreComment']);
+
+    // Lấy comment thêm
+    Route::get('/{id}/replies', [CommentController::class, 'loadMoreReplies'])->where('id', '[0-9]+');
+
+    Route::group(['middleware' => ['auth.jwt']], function () {
+        // Thêm comment
+        Route::post('/', [CommentController::class, 'AddComment']);
+
+        // Thêm emoji
+        Route::post('/{id}/emoji', [CommentController::class, 'SubmitEmoji'])->where('id', '[0-9]+');
+
+        //Xóa comment
+        Route::delete('/{id}', [CommentController::class, 'DeleteComment'])->where('id', '[0-9]+');
+    });
 });
-Route::post('/load-more-comment', [CommentController::class, 'LoadMoreComment']);
-Route::post('/load-more-replies', [CommentController::class, 'LoadMoreReplies']);
+
+
 // =================API luồng Tiếp thị liên kết==============================
 Route::group(['middleware' => ['auth.jwt']], function () {
     Route::post('/save-contract', [AffiliateContracts::class, 'create']);

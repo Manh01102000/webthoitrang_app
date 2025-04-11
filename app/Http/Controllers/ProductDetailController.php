@@ -331,6 +331,7 @@ class ProductDetailController extends Controller
             // data review
             'reviews' => $reviews,
         ];
+        // var_dump($dataAll);
         // =============== TRẢ VỀ VIEW =====================
         return view('product_detail', [
             'dataSeo' => $dataSeo,
