@@ -184,7 +184,7 @@ class CommentRepository implements CommentRepositoryInterface
         try {
             $user_id = $data['user_id'];
             $userType = $data['userType'];
-            $commentId = $data['commentId'];
+            $commentId = $data['comment_id'];
             // Tìm bình luận theo ID
             $comment = Comment::where('comment_id', $commentId)->first();
             if (!$comment) {
@@ -196,7 +196,7 @@ class CommentRepository implements CommentRepositoryInterface
                 ];
             }
             // Kiểm tra xem bình luận có thuộc về user hay không
-            if ($comment->user_id !== $user_id) {
+            if ($comment->comment_user_id != $user_id) {
                 return [
                     'success' => false,
                     'message' => "Bạn không có quyền xóa bình luận này",

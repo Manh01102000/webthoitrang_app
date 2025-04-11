@@ -821,6 +821,7 @@ function buildTree(array $groupedComments, $parentId, $limitReplies)
 if (!function_exists('renderComments')) {
     function renderComments($comments, $totalComments, $data_id, $data_user_id, $level = 1) // Thêm tham số $level
     {
+
         // ======= Lấy thông tin người dùng từ cookie & giải mã =======
         $UID_ENCRYPT = $_COOKIE['UID'] ?? null;
         $UT_ENCRYPT = $_COOKIE['UT'] ?? null;
@@ -828,7 +829,6 @@ if (!function_exists('renderComments')) {
             $key = base64_decode(getenv('KEY_ENCRYPT'));
             $data_user_id = decryptData($UID_ENCRYPT, $key);
         }
-
         if (empty($comments)) {
             return '';
         }
@@ -865,7 +865,7 @@ if (!function_exists('renderComments')) {
 
             // Nếu có comment con, hiển thị danh sách con
             if ($level == 1 && !empty($comment['children'])) {
-                $html .= '<ul class="reply-list">' . renderComments($comment['children'], $level + 1) . '</ul>';
+                $html .= '<ul class="reply-list">' . renderComments($comment['children'], '', $data_id, $data_user_id, $level + 1) . '</ul>';
             }
 
             // Nếu có bình luận con bị ẩn, hiển thị nút "Xem thêm phản hồi"
@@ -877,7 +877,7 @@ if (!function_exists('renderComments')) {
         }
         $html .= '</ul>';
 
-        if ($totalComments > 10) {
+        if (isset($totalComments) && $totalComments > 10) {
             $html .= '<button class="load-more-comment" data-page="2" onclick="loadMoreComment(' . $data_id . ',this)">Xem thêm bình luận</button>';
         }
         return $html;
